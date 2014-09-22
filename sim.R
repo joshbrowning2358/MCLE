@@ -1,0 +1,2 @@
+#Function should take a distribution, parameters, outlier contamination counts, and some measure of outlier scale (as well as number of simulations).
+#Then, a simulation should be performed comparing the MLE and MCLE(alpha=.05,.01,.005,.001)
