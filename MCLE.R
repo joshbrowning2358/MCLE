@@ -4,6 +4,7 @@ source("mvt.dev.R")
 source("mvst.dev.R")
 source("mvsn.dev.R")
 source("get.robust.func.R")
+library(robustbase)
 
 #Function should take data, a distribution, and alpha and return the fitted parameters.
 MCLE <- function(data, distr, robAlpha, robFuncType){
@@ -18,7 +19,11 @@ MCLE <- function(data, distr, robAlpha, robFuncType){
   
   soln = nlminb(start=start, function(params){
     sum(apply(data, 1, devFunc, params=params, robAlpha=robAlpha, robFuncType=robFuncType))
-  } )
+  }, control=list(trace=1)
+  )
+  params6 = c(14.5543,23.0313,-6.77108,379.037,90.6066,316.534,33.1582,-18.5518,326.433)
+  devFunc(data[1,], params6, .01, "bounded")
+  devFunc(data[1,], mvn.start(data), .01, "bounded")
   
   convFunc = eval(parse( text=paste0(distr,".params2dp") ) )
   out = convFunc(soln$par)
@@ -30,11 +35,11 @@ MCLE <- function(data, distr, robAlpha, robFuncType){
 }
 
 data = matrix(rnorm(300), nrow=100)
-MCLE( data, "mvn", robAlpha=.1, robFuncType="none" )
+MCLE( data, "mvn", robAlpha=.01, robFuncType="none" )
 MCLE( data, "mvsn", robAlpha=.01, robFuncType="none" )
 MCLE( data, "mvt", robAlpha=.01, robFuncType="none" )
 MCLE( data, "mvst", robAlpha=.01, robFuncType="none" )
-MCLE( data, "mvn", robAlpha=.1, robFuncType="bounded" )
+MCLE( data, "mvn", robAlpha=.01, robFuncType="bounded" )
 MCLE( data, "mvsn", robAlpha=.01, robFuncType="bounded" )
 MCLE( data, "mvt", robAlpha=.01, robFuncType="bounded" )
 MCLE( data, "mvst", robAlpha=.01, robFuncType="bounded" )

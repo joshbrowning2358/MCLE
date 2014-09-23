@@ -4,6 +4,13 @@ robust.mvn.dev <- function(x, params, robAlpha, robFuncType){
   robust.mvst.dev(x=x, params=params, robAlpha=robAlpha, robFuncType=robFuncType)
 }
 
+robust.mvn.dev.grad <- function(x, params, robAlpha, robFuncType){
+  p = mvn.params2p(params=params)
+  params = c(params, rep(0,p), Inf) #Append on alpha and nu
+  grad = robust.mvst.dev.grad(x=x, params=params, robAlpha=robAlpha, robFuncType=robFuncType)
+  return( grad[1:(p+p*(p+1)/2)] )
+}
+
 mvn.start <- function(data){
   mu=colMeans(data)
   Sigma=var(data)
