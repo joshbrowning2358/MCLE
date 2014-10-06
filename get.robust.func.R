@@ -7,16 +7,10 @@ get.robust.func <- function(k, robFuncType){
   
   if(robFuncType=="bounded"){
     robFunc = function(nll){
-      if(nll>k)
-        ifelse(nll<k, nll, k+1-exp(-(nll-k)) )
-      else
-        return(nll)
+      ifelse(nll<k, nll, k+1-exp(-(nll-k)) )
     }
     robFuncGrad = function(nll){
-      if(nll>k)
-        return(exp(-(nll-k)))
-      else
-        return(1)
+      ifelse(nll>k,exp(-(nll-k)),1)
     }
   }
   if(robFuncType=="none"){

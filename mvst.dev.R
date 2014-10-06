@@ -20,7 +20,7 @@ robust.mvst.dev <- function(x, params, robAlpha, robFuncType){
   
   #We want (x-xi)^T Omega^{-1} (x-xi)
   #If y=R^{-T}(x-xi), then y^T y=(x-xi)^T R^{-1} R^{-T} (x-xi), which is what we want.
-  y = t(Rinv)%*%(x-xi)
+  y = t( t(Rinv)%*%t(x-xi) )
   #Rinv is diagonal, so determinant is product of diagonal.
   #Omega=Rinv^{-T}%*%Rinv^{-1}, so det(Omega)=1/det(Rinv)^2
   detOmega = 1/prod(diag(Rinv))^2
@@ -34,11 +34,8 @@ robust.mvst.dev <- function(x, params, robAlpha, robFuncType){
     k = -log(2) + p/2*log(2*pi) + 1/2*detEst + qf(1-robAlpha, df1=p, df2=nu)
     robFunc = get.robust.func( k=k, robFuncType )[[1]]
 
-    if(p==1)
-      return( robFunc( -log(2) + p/2*log(2*pi) + 1/2*log(detOmega) +
-          1/2*y^2 - log( pnorm( alpha/omega*(x-xi) ) ) ) )
-    return( robFunc( -log(2) + p/2*log(2*pi) + 1/2*log(detOmega) +
-        1/2*t(y)%*%y - log( pnorm( (t(alpha)/omega)%*%matrix(x-xi) ) ) ) )
+    return( robFunc( -log(2) + p/2*log(2*pi) + 1/2*log(detOmega) + 1/2*rowSums(y^2)
+      - t( log( pnorm( (alpha/omega)%*%t(x-xi) ) ) ) ) )
   } else {
     #Begin penalizing when observations are larger than F(1-alpha)
     #For ease of use, ignore skewness
@@ -46,6 +43,8 @@ robust.mvst.dev <- function(x, params, robAlpha, robFuncType){
     detEst = det( covMcd(x)$cov )
     k = -log(2) + p/2*log(2*pi) + 1/2*detEst + qf(1-robAlpha, df1=p, df2=nu)
     robFunc = get.robust.func( k=k, robFuncType )[[1]]
+    warning("Appropriate choice of k has not been implemented!")
+    warning("Need to vectorize this part of mvst.dev!")
     
     Q = t(y)%*%y
     return( robFunc( -log(2) - lgamma((nu+p)/2) + 1/2*log(detOmega) + p/2*log(pi*nu) +

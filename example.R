@@ -1,0 +1,15 @@
+setwd("~/GitHub/MCLE/")
+source("mvn.dev.R")
+source("mvt.dev.R")
+source("mvst.dev.R")
+source("mvsn.dev.R")
+source("get.robust.func.R")
+source("MCLE.R")
+library(robustbase)
+library(sn)
+
+data = matrix(rnorm(3000), nrow=1000)
+data[1:100,] = matrix(rnorm(300, mean=20), nrow=100)
+
+MCLE( data, "mvn", robAlpha=.01, robFuncType="none" )
+MCLE( data, "mvn", robAlpha=.01, robFuncType="bounded" )
