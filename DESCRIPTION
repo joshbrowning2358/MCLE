@@ -1,0 +1,21 @@
+Package: MCLE
+Type: Package
+Title: Package to robustly fit distributions
+Version: 0.0.1
+Date: 2016-01-13
+Author: Josh Browning <rockclimber112358@gmail.com>
+Maintainer: Josh Browning <rockclimber112358@gmail.com>
+Description: This package provides functions for robust fitting of several
+    distributions, including the skew-t distributon.
+URL: https://github.com/rockclimber112358/MCLE
+License: GPL (>= 3)
+Imports:
+Depends:
+    sn (>= 1.1-2)
+LazyData: yes
+ZipData: no
+VignetteBuilder: knitr
+Suggests:
+    knitr,
+    ggplot2
+RoxygenNote: 5.0.1
