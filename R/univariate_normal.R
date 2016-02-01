@@ -18,7 +18,7 @@
 ##' @name univariateNormal
 NULL
 
-##' @rdname multivariateNormal
+##' @rdname univariateNormal
 devUN = function(x, params){
     params = paramVec2ListUN(params)
     -sum(dnorm(x, mean = params$mu, sd = params$sigma, log = TRUE))
