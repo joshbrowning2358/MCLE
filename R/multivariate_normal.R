@@ -20,7 +20,7 @@ NULL
 
 ##' @rdname multivariateNormal
 devMN = function(x, params){
-    params = paramVec2List(params)
+    params = paramVec2ListMN(params)
     -sum(dnorm(x, mean = params$mu, sd = params$sigma, log = TRUE))
 }
 
@@ -43,5 +43,7 @@ paramVec2ListMN = function(paramVec){
 
 ##' @rdname multivariateNormal
 paramList2VecMN = function(paramList){
+    paramList$alpha = rep(0, length(paramList[[1]]))
+    paramVec = sn:::msn.cp2cp(paramList)
     return(c(paramList$mu, as.numeric(paramList$sigma)))
 }

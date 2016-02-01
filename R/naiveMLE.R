@@ -16,29 +16,34 @@
 ##' @examples
 ##' \dontrun{
 ##' data = rnorm(100)
-##' uniNorm = distribution(devUN, gradDevUN, paramList2VecUN, paramVec2ListUN)
+##' uniNorm = list(dev = devUN, grad = gradDevUN,
+##'                paramList2Vec = paramList2VecUN,
+##'                paramVec2List = paramVec2ListUN)
 ##' initial = list(mu = 0, sigma = 1)
-##' naiveMLE(data, distribution, initial)
+##' naiveMLE(data, distribution = uniNorm, initial)
 ##' mean(data)
 ##' sd(data)
 ##' 
-##' data = matrix(rnorm(200), nrow = 100)
-##' distribution = normalMult
-##' initial = list(mu = c(0, 0), sigma = diag(2))
-##' naiveMLE(data, distribution, initial)
-##' apply(data, mean)
-##' cov(data)
+##' #data = matrix(rnorm(200), nrow = 100)
+##' #distribution = normalMult
+##' #initial = list(mu = c(0, 0), sigma = diag(2))
+##' #naiveMLE(data, distribution, initial)
+##' #apply(data, mean)
+##' #cov(data)
 ##' }
 ##' 
 ##' @return A numeric vector giving the maximum likelihood estimates.
-##'   
+##' 
+##' @export
+##' 
 
 naiveMLE = function(data, distribution, initial){
+    warning("Should use the param conversion function here!")
     par = sapply(initial, as.numeric)
     if(is(par, "list"))
         par = do.call("c", par)
     fn = function(par){
-        distribution@dev(x = data, params = par)
+        distribution$dev(x = data, params = par)
     }
     gr = function(par){
         distribution$grad(x = data, params = par)
