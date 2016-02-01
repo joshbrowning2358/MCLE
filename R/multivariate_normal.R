@@ -16,12 +16,20 @@
 ##'   (a numeric matrix).
 ##'   
 ##' @name multivariateNormal
+##' @importFrom mvtnorm dmvnorm
 NULL
 
 ##' @rdname multivariateNormal
+
 devMN = function(x, params){
-    params = paramVec2List(params)
-    -sum(dnorm(x, mean = params$mu, sd = params$sigma, log = TRUE))
+    params = paramVec2ListMN(params)
+    if(is.numeric(x)){
+        if(length(params$mu) != 1)
+            stop("One-dimensional data but not one-dimensional mu!")
+        else
+            x = matrix(x, ncol = 1)
+    }
+    -sum(mvtnorm::dmvnorm(x, mean = params$mu, sigma = params$sigma, log = TRUE))
 }
 
 ##' @rdname multivariateNormal

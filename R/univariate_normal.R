@@ -18,14 +18,14 @@
 ##' @name univariateNormal
 NULL
 
-##' @rdname multivariateNormal
+##' @rdname univariateNormal
 devUN = function(x, params){
-    params = paramVec2List(params)
+    params = paramVec2ListUN(params)
     -sum(dnorm(x, mean = params$mu, sd = params$sigma, log = TRUE))
 }
 
 gradDevUN = function(x, params){
-    params = paramVec2List(params)
+    params = paramVec2ListUN(params)
     df.dmu = -(x-params$mu)/params$sigma^2
     df.dsigma = 1/params$sigma - (x-params$mu)^2/params$sigma^3
     return(c(sum(df.dmu), sum(df.dsigma)))
