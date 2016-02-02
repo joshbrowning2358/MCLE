@@ -21,27 +21,25 @@
 ##' @examples
 ##' \dontrun{
 ##' data = rnorm(100)
-<<<<<<< HEAD
 ##' uniNorm = list(dev = devUN, grad = gradDevUN,
 ##'                paramList2Vec = paramList2VecUN,
 ##'                paramVec2List = paramVec2ListUN)
 ##' initial = list(mu = 0, sigma = 1)
-##' naiveMLE(data, distribution = uniNorm, initial)
-=======
-##' uniNorm = getNormalDistribution()
-##' initial = list(mu = 0, sigma = 1)
-##' naiveMLE(data, dist, initial)
-##' naiveMLE(data, dist, initial, returnOptim = TRUE)
->>>>>>> 3d52efe4d194379bd99f12a66a5c9d3eb3c025b5
+##' naiveMLE(data, dist = uniNorm, initial)
+##' naiveMLE(data, dist = uniNorm, initial, returnOptim = TRUE)
 ##' mean(data)
 ##' sd(data)
 ##' 
-##' #data = matrix(rnorm(200), nrow = 100)
-##' #distribution = normalMult
-##' #initial = list(mu = c(0, 0), sigma = diag(2))
-##' #naiveMLE(data, distribution, initial)
-##' #apply(data, mean)
-##' #cov(data)
+##' data = matrix(rnorm(200), nrow = 100)
+##' mst = list(dev = devMST, grad = gradDevMST,
+##'            paramList2Vec = paramList2VecMST,
+##'            paramVec2List = paramVec2ListMST)
+##' initial = list(beta = c(0, 0), Omega = diag(c(1, 1)),
+##'                alpha = c(0, 0), nu = 100)
+##' naiveMLE(data, dist = uniNorm, initial)
+##' naiveMLE(data, dist = uniNorm, initial, returnOptim = TRUE)
+##' mean(data)
+##' sd(data)
 ##' }
 ##' 
 ##' @return See the returnOptim argument description.
@@ -54,17 +52,19 @@ naiveMLE = function(data, dist, initial, returnOptim = FALSE){
     if(is.null(names(initial)))
         stop("The 'initial' argument must be a list with named values!")
     stopifnot(is.numeric(data))
-    stopifnot(is(dist, "distribution"))
+    stopifnot(is(dist, "list"))
+    stopifnot(c("dev", "grad", "paramVec2List", "paramList2Vec") %in%
+                  names(dist))
     
-    initialVec = dist@paramList2Vec(initial)
+    initialVec = dist$paramList2Vec(initial)
     fn = function(par){
-        dist@dev(x = data, params = par)
+        dist$dev(x = data, params = par)
     }
     gr = function(par){
         dist$grad(x = data, params = par)
     }
     optimResult = optim(initialVec, fn = fn, gr = gr)
-    soln = dist@paramVec2List(optimResult$par)
+    soln = dist$paramVec2List(optimResult$par)
     if(!returnOptim){
         return(soln)
     } else {
