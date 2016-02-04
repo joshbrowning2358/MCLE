@@ -16,7 +16,6 @@
 ##'   (a numeric matrix).
 ##'   
 ##' @name multivariateNormal
-##' @importFrom mvtnorm dmvnorm
 NULL
 
 ##' @rdname multivariateNormal

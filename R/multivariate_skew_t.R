@@ -1,7 +1,6 @@
 ##' Multivariate Skew-t
 ##' 
-##' Functions defining the multivariate skew t-distribution.  These should be 
-##' used to construct a distribution class as defined in this package.
+##' Functions defining the multivariate skew t-distribution.
 ##' 
 ##' The deviance function returns the deviance of all the observations with the 
 ##' given parameters.  The gradDev function computes the gradient of this 

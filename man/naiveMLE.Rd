@@ -4,23 +4,29 @@
 \alias{naiveMLE}
 \title{Naive MLE}
 \usage{
-naiveMLE(data, distribution, initial)
+naiveMLE(data, dist, initial, returnOptim = FALSE)
 }
 \arguments{
 \item{data}{A matrix of data.  If univariate, data should have 1 column.  If
 multivariate, data should have one column for each dimension.}
 
-\item{distribution}{A list containing objects dev and grad.  Both are 
-functions which take the data and parameters and calculate the deviance 
-and gradient.  See univariate_normal.R for examples of how to define these
+\item{dist}{A distribution object (essentially a list with functions 
+defining the distribution, but see the distribution class defined in this 
+package).  See getNormalDistribution and the functions it loads for 
+examples of how to define this distribution object and the corresponding 
 functions.}
 
 \item{initial}{Initial estimate for the parameters.  This should be a list 
-of parameters such that it could be passed to the functions defined by
-distribution.}
+of parameters such that it could be passed to the paramList2Vec function 
+in the distribution object.}
+
+\item{returnOptim}{Logical.  If FALSE (default) the function returns the 
+numeric estimates of the parameters, converted back into a list object. If
+TRUE, the function returns a list with the results of the call to optim (named "optim"
+in the output) as well as the parameters (named "solution")}
 }
 \value{
-A numeric vector giving the maximum likelihood estimates.
+See the returnOptim argument description.
 }
 \description{
 This function computes a Maximum Likelihood Estimate by using optim() to 
@@ -33,16 +39,21 @@ uniNorm = list(dev = devUN, grad = gradDevUN,
                paramList2Vec = paramList2VecUN,
                paramVec2List = paramVec2ListUN)
 initial = list(mu = 0, sigma = 1)
-naiveMLE(data, distribution = uniNorm, initial)
+naiveMLE(data, dist = uniNorm, initial)
+naiveMLE(data, dist = uniNorm, initial, returnOptim = TRUE)
 mean(data)
 sd(data)
 
-#data = matrix(rnorm(200), nrow = 100)
-#distribution = normalMult
-#initial = list(mu = c(0, 0), sigma = diag(2))
-#naiveMLE(data, distribution, initial)
-#apply(data, mean)
-#cov(data)
+data = matrix(rnorm(200), nrow = 100)
+mst = list(dev = devMST, grad = gradDevMST,
+           paramList2Vec = paramList2VecMST,
+           paramVec2List = paramVec2ListMST)
+initial = list(beta = c(0, 0), Omega = diag(c(1, 1)),
+               alpha = c(0, 0), nu = 100)
+naiveMLE(data, dist = uniNorm, initial)
+naiveMLE(data, dist = uniNorm, initial, returnOptim = TRUE)
+mean(data)
+sd(data)
 }
 
 }

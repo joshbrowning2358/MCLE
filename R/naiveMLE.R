@@ -36,10 +36,27 @@
 ##'            paramVec2List = paramVec2ListMST)
 ##' initial = list(beta = c(0, 0), Omega = diag(c(1, 1)),
 ##'                alpha = c(0, 0), nu = 100)
-##' naiveMLE(data, dist = uniNorm, initial)
-##' naiveMLE(data, dist = uniNorm, initial, returnOptim = TRUE)
+##' naiveMLE(data, dist = mst, initial)
+##' naiveMLE(data, dist = mst, initial, returnOptim = TRUE)
+##' 
+##' data = matrix(rnorm(100), nrow = 100)
+##' ust = list(dev = devUST, grad = gradDevUST,
+##'            paramList2Vec = paramList2VecUST,
+##'            paramVec2List = paramVec2ListUST)
+##' initial = list(xi = 0, omega = 1, alpha = 0, nu = 100)
+##' naiveMLE(data, dist = ust, initial)
+##' naiveMLE(data, dist = ust, initial, returnOptim = TRUE)
 ##' mean(data)
 ##' sd(data)
+##' 
+##' data = rpois(30, lambda = 4.7)
+##' data = c(data, 100)
+##' dist = list(dev = devPsn, grad = gradDevPsn,
+##'            paramList2Vec = paramList2VecPsn,
+##'            paramVec2List = paramVec2ListPsn)
+##' initial = list(lambda = 1)
+##' naiveMLE(data, dist = dist, initial)
+##' mean(data)
 ##' }
 ##' 
 ##' @return See the returnOptim argument description.
