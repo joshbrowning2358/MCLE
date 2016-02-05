@@ -1,7 +1,10 @@
-##' Naive MLE
+##' Maximum Constrained Likelihood Estimator
 ##' 
-##' This function computes a Maximum Likelihood Estimate by using optim() to 
-##' optimize the joint log-likelihood.
+##' This function computes a "Maximum Constrained Likelihood Estimator" by using
+##' optim() to optimize a constrained log-likelihood function.  The constraint 
+##' is a function that is applied to the log-likelihood of each observation 
+##' which, in the ideal case, prevents the log-likelihood from being too small 
+##' and hence the observation too influential on the estimator.
 ##' 
 ##' @param data A matrix of data.  If univariate, data should have 1 column.  If
 ##'   multivariate, data should have one column for each dimension.
@@ -15,8 +18,13 @@
 ##'   in the distribution object.
 ##' @param returnOptim Logical.  If FALSE (default) the function returns the 
 ##'   numeric estimates of the parameters, converted back into a list object. If
-##'   TRUE, the function returns a list with the results of the call to optim (named "optim"
-##'   in the output) as well as the parameters (named "solution")
+##'   TRUE, the function returns a list with the results of the call to optim 
+##'   (named "optim" in the output) as well as the parameters (named "solution")
+##' @param constraintFunc A function taking a numeric vector of likelihood 
+##'   values and returning the adjusted likelihood values.
+##' @param constraintFuncDeriv A function providing the derivative of the
+##'   constraint function.  This function should also accept a numeric vector
+##'   and return a numeric vector of derivative values.
 ##'   
 ##' @examples
 ##' \dontrun{
@@ -25,8 +33,8 @@
 ##'                paramList2Vec = paramList2VecUN,
 ##'                paramVec2List = paramVec2ListUN)
 ##' initial = list(mu = 0, sigma = 1)
-##' naiveMLE(data, dist = uniNorm, initial)
-##' naiveMLE(data, dist = uniNorm, initial, returnOptim = TRUE)
+##' MCLE(data, dist = uniNorm, initial)
+##' MCLE(data, dist = uniNorm, initial, returnOptim = TRUE)
 ##' mean(data)
 ##' sd(data)
 ##' 
@@ -44,8 +52,8 @@
 ##'            paramList2Vec = paramList2VecUST,
 ##'            paramVec2List = paramVec2ListUST)
 ##' initial = list(xi = 0, omega = 1, alpha = 0, nu = 100)
-##' naiveMLE(data, dist = ust, initial)
-##' naiveMLE(data, dist = ust, initial, returnOptim = TRUE)
+##' MCLE(data, dist = ust, initial)
+##' MCLE(data, dist = ust, initial, returnOptim = TRUE)
 ##' mean(data)
 ##' sd(data)
 ##' 
@@ -62,10 +70,16 @@
 ##' @return See the returnOptim argument description.
 ##' 
 ##' @export
-##'   
+##' 
 
-naiveMLE = function(data, dist, initial, returnOptim = FALSE){
+MCLE = function(data, dist, initial, returnOptim = FALSE,
+                constraintFunc = constraintET,
+                constraintFuncDeriv = constraintDerivET){
     ## Data Quality Checks
+    stopifnot(is.numeric(constraintFunc(c(1, 2, 3))))
+    stopifnot(length(constraintFunc(c(1, 2, 3))) == 3)
+    stopifnot(is.numeric(constraintFuncDeriv(c(1, 2, 3))))
+    stopifnot(length(constraintFuncDeriv(c(1, 2, 3))) == 3)
     if(!is(initial, "list"))
         stop("The 'initial' argument must be a list!")
     if(is.null(names(initial)))
@@ -77,10 +91,12 @@ naiveMLE = function(data, dist, initial, returnOptim = FALSE){
     
     initialVec = dist$paramList2Vec(initial)
     fn = function(par){
-        dist$dev(x = data, params = par)
+        sum(constraintFunc(sapply(data, dist$dev, params = par)))
     }
     gr = function(par){
-        dist$grad(x = data, params = par)
+        # Chain rule: d/dtheta(f(L(x))) = f'(L(x)) * d/dtheta(L(x))
+        sum(constraintFuncDeriv(sapply(data, dist$dev, params = par))) *
+            dist$grad(x = data, params = par)
     }
     optimResult = optim(initialVec, fn = fn, gr = gr)
     soln = dist$paramVec2List(optimResult$par)
