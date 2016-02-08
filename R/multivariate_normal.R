@@ -21,36 +21,39 @@ NULL
 ##' @rdname multivariateNormal
 
 devMN = function(x, params){
-    params = paramVec2ListMN(params)
-    if(is.numeric(x)){
-        if(length(params$mu) != 1)
-            stop("One-dimensional data but not one-dimensional mu!")
-        else
-            x = matrix(x, ncol = 1)
-    }
-    -sum(mvtnorm::dmvnorm(x, mean = params$mu, sigma = params$sigma, log = TRUE))
+    n = nrow(x)
+    ## Add alpha as 0's
+    params = c(params, rep(0, ncol(x)))
+    out = apply(x, 1, function(data){
+        sn:::msn.pdev(y = matrix(data, nrow = 1), param = params,
+                      x = matrix(1))
+    })
+    return(out)
 }
 
 ##' @rdname multivariateNormal
 gradDevMN = function(x, params){
-    params = paramVec2List(params)
-    df.dmu = -(x-params$mu)/params$sigma^2
-    df.dsigma = 1/params$sigma - (x-params$mu)^2/params$sigma^3
-    return(c(sum(df.dmu), sum(df.dsigma)))
+    stop("There is no built in function for this!!!")
 }
 
 ##' @rdname multivariateNormal
 paramVec2ListMN = function(paramVec){
-    n = (-1 + sqrt(1 + 4 * length(paramVec))) / 2
-    return(list(
-        mu = paramVec[1:n],
-        sigma = matrix(paramVec[(n+1):length(paramVec)], nrow = n)
-    ))
+    ## d + d(d+1)/2 = len
+    ## d^2 + 3d - 2*len = 0
+    d = (-3 + sqrt(9 + 8 * length(paramVec))) / 2
+    ## Add in alpha elements:
+    paramVec = c(paramVec, rep(0, d))
+    out = sn:::optpar2dplist(paramVec, p = 1, d = d)$dp
+    names(out) = c("mu", "sigma", "alpha")
+    out = out[c("mu", "sigma")]
+    return(out)
 }
 
 ##' @rdname multivariateNormal
 paramList2VecMN = function(paramList){
-    paramList$alpha = rep(0, length(paramList[[1]]))
-    paramVec = sn:::msn.cp2cp(paramList)
-    return(c(paramList$mu, as.numeric(paramList$sigma)))
+    d = length(paramList[[1]])
+    paramList$alpha = rep(0, d)
+    paramVec = sn:::dplist2optpar(paramList)
+    paramVec = paramVec[1:(length(paramVec) - d)]
+    return(paramVec)
 }

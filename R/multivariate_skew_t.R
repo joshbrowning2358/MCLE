@@ -20,14 +20,21 @@
 NULL
 
 ##' @rdname multivariateSkewT
-devMST = function(x, params){
-    sn:::mst.pdev(x = matrix(1, nrow(x)), y = x, param = params,
-                   w = rep(1, nrow(x)))
+devMT = function(x, params){
+    l = length(params)
+    out = apply(x, 1, function(data){
+        sn:::mst.pdev(y = matrix(data, nrow = 1), x = matrix(1), param = params)
+    })
+    return(out)
 }
 
-gradDevMST = function(x, params){
-    sn:::mst.pdev.grad(x = matrix(1, nrow(x)), y = x, param = params,
-                       w = rep(1, nrow(x)))
+gradDevMT = function(x, params){
+    l = length(params)
+    out = apply(x, 1, function(data){
+        sn:::mst.pdev.grad(y = matrix(data, nrow = 1), x = matrix(1),
+                           param = params)
+    })
+    return(out)
 }
 
 paramVec2ListMST = function(paramVec){
