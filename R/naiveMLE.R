@@ -30,6 +30,12 @@
 ##' mean(data)
 ##' sd(data)
 ##' 
+##' ust = list(dev = devUST, grad = gradDevUST,
+##'            paramList2Vec = paramList2VecUST,
+##'            paramVec2List = paramVec2ListUST)
+##' initial = list(xi = 0, omega = 1, alpha = 0, nu = 100)
+##' naiveMLE(data, dist = ust, initial)
+##' 
 ##' data = matrix(rnorm(200), nrow = 100)
 ##' mst = list(dev = devMST, grad = gradDevMST,
 ##'            paramList2Vec = paramList2VecMST,
@@ -38,16 +44,6 @@
 ##'                alpha = c(0, 0), nu = 100)
 ##' naiveMLE(data, dist = mst, initial)
 ##' naiveMLE(data, dist = mst, initial, returnOptim = TRUE)
-##' 
-##' data = matrix(rnorm(100), nrow = 100)
-##' ust = list(dev = devUST, grad = gradDevUST,
-##'            paramList2Vec = paramList2VecUST,
-##'            paramVec2List = paramVec2ListUST)
-##' initial = list(xi = 0, omega = 1, alpha = 0, nu = 100)
-##' naiveMLE(data, dist = ust, initial)
-##' naiveMLE(data, dist = ust, initial, returnOptim = TRUE)
-##' mean(data)
-##' sd(data)
 ##' 
 ##' data = rpois(30, lambda = 4.7)
 ##' data = c(data, 100)

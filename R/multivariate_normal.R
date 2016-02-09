@@ -33,7 +33,20 @@ devMN = function(x, params){
 
 ##' @rdname multivariateNormal
 gradDevMN = function(x, params){
-    stop("There is no built in function for this!!!")
+    ## Taken from sn
+    p = 1
+    d = ncol(x)
+    mu <- matrix(params[1:(p * d)], p, d)
+    D <- exp(-2 * params[(p * d + 1):(p * d + d)])
+    A <- diag(d)
+    i0 <- p * d + d * (d + 1)/2
+    A[!lower.tri(A, diag = TRUE)] <- params[(p * d + d + 1):i0]
+    Oinv <- t(A) %*% diag(D, d, d) %*% A
+    ## Formulas taken from
+    ## http://stats.stackexchange.com/questions/27436/how-to-take-derivative-of-multivariate-normal-density
+    muMat = matrix(mu, nrow = nrow(x), ncol = length(mu), byrow = TRUE)
+    gradMu = Oinv %*% t(x - muMat)
+    gradSigma = -1/2*(Oinv - Oinv %*% t(x - muMat) %*% (x - muMat) %*% Oinv)
 }
 
 ##' @rdname multivariateNormal
