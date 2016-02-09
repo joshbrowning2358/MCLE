@@ -60,7 +60,7 @@
 ##' @export
 ##'   
 
-naiveMLE = function(data, dist, initial, returnOptim = FALSE){
+naiveMLE = function(data, dist, initial, w = rep(1, NROW(data)), returnOptim = FALSE){
     ## Data Quality Checks
     if(!is(initial, "list"))
         stop("The 'initial' argument must be a list!")
@@ -73,10 +73,10 @@ naiveMLE = function(data, dist, initial, returnOptim = FALSE){
     
     initialVec = dist$paramList2Vec(initial)
     fn = function(par){
-        dist$dev(x = data, params = par)
+        dist$dev(x = data, params = par, w = w)
     }
     gr = function(par){
-        dist$grad(x = data, params = par)
+        dist$grad(x = data, params = par, w = w)
     }
     optimResult = optim(initialVec, fn = fn, gr = gr)
     soln = dist$paramVec2List(optimResult$par)

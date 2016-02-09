@@ -20,15 +20,17 @@ NULL
 
 ##' @rdname multivariateNormal
 
-devMN = function(x, params){
+devMN = function(x, params, w = rep(1, nrow(x))){
     n = nrow(x)
-    ## Add alpha as 0's
-    params = c(params, rep(0, ncol(x)))
-    out = apply(x, 1, function(data){
-        sn:::msn.pdev(y = matrix(data, nrow = 1), param = params,
-                      x = matrix(1))
-    })
-    return(out)
+    ## Modified from sn:::msn.pdev
+    d <- ncol(x)
+    n <- sum(w)
+    p <- 1
+    dp. <- sn:::optpar2dplist(params, d = ncol(x), p = 1)
+    logL <- w * sn:::dmsn(x, matrix(1, nrow = NROW(x)) %*% dp.$beta,
+                          dp.$Omega, c(0, 0), log = TRUE)
+    dev <- (-2) * logL
+    return(dev)
 }
 
 ##' @rdname multivariateNormal
@@ -46,7 +48,11 @@ gradDevMN = function(x, params){
     ## http://stats.stackexchange.com/questions/27436/how-to-take-derivative-of-multivariate-normal-density
     muMat = matrix(mu, nrow = nrow(x), ncol = length(mu), byrow = TRUE)
     gradMu = Oinv %*% t(x - muMat)
-    gradSigma = -1/2*(Oinv - Oinv %*% t(x - muMat) %*% (x - muMat) %*% Oinv)
+    ## Gradient with respect to sigma, but what about with respect to
+    ## optimization parameters?
+    gradSigma = apply(x - muMat, 1, function(diffVec){
+        -1/2*(Oinv - Oinv %*% matrix(diffVec, ncol = 1) %*% diffVec %*% Oinv)
+    })
 }
 
 ##' @rdname multivariateNormal

@@ -41,7 +41,7 @@ devMST = function(x, params, w = rep(1, nrow(x)), fixed.nu = NULL,
     return(dev)
 }
 
-gradDevMST = function(x, params){
+gradDevMST = function(x, params, w = rep(1, nrow(x))){
     l = length(params)
     
     ## Taken from sn:::mst.pdev.grad
