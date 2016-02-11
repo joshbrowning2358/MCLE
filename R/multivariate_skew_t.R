@@ -79,10 +79,11 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE, fixed.nu 
     dt.dQ <- (-0.5) * L * sf/(Q + nu)
     logT. <- pt(t., nu + d, log.p = TRUE)
     dlogT. <- exp(dt(t., nu + d, log = TRUE) - logT.)
+    stop("x isn't what you're calling x!  It's the matrix of 1's!!!")
 #     Dbeta <- (-2 * t(x) %*% (u.w * dlogft) %*% Oinv - outer(as.vector(t(x) %*% 
 #         (dlogT. * dt.dL * w)), eta) - 2 * t(x) %*% (dlogT. * 
 #         dt.dQ * u.w) %*% Oinv)
-    M1 = vecOuterMult(-2 * x, u.w * dlogft)
+    M1 = apply((u.w * dlogft), 1, function(vec){vec %*% Oinv})
     M2 = vecOuterMult(2 * x, (dlogT. * dt.dQ * u.w))
     M3 = vecOuterMult(x * (dlogT. * dt.dL * w), outer(rep(1, nrow(x)), eta))
     Dbeta <- mapply(function(m1, m2, m3){
@@ -109,6 +110,7 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE, fixed.nu 
             mat + 0.5 * weight / D
         }, mat = M, weight = w)
     }
+    stop("Keep adjusting here!!!")
     grad <- (-2) * c(Dbeta, DD * (-2 * D), DA, if (!symmetr) Deta)
     if (is.null(fixed.nu)) {
         df0 <- min(nu, 1e+08)
@@ -133,25 +135,7 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE, fixed.nu 
         Ddf <- sum((dlogft.ddf + dlogT.ddf) * w)
         grad <- c(grad, -2 * Ddf * df0)
     }
-    if (!is.null(penalty)) {
-        if (symmetr) 
-            stop("penalized log-likelihood not allowed when alpha=0")
-        Ainv <- backsolve(A, diag(d))
-        Omega <- Ainv %*% diag(1/D, d, d) %*% t(Ainv)
-        omega <- diag(Omega)
-        alpha <- eta * omega
-        Q <- Qpenalty(list(alpha, cov2cor(Omega)), nu, der = 1)
-        comp <- 1:(length(alpha) + is.null(fixed.nu))
-        Qder <- attr(Q, "der1") * c(1/omega, 1)[comp]
-        grad <- grad + 2 * c(rep(0, p * d + d * (d + 1)/2), Qder)
-    }
     return(grad)
-    
-    out = apply(x, 1, function(data){
-        sn:::mst.pdev.grad(y = matrix(data, nrow = 1), x = matrix(1),
-                           param = params)
-    })
-    return(out)
 }
 
 paramVec2ListMST = function(paramVec){
