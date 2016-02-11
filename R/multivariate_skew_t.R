@@ -41,7 +41,7 @@ devMST = function(x, params, w = rep(1, nrow(x)), fixed.nu = NULL,
     return(dev)
 }
 
-gradDevMST = function(x, params, w = rep(1, nrow(x))){
+gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE, fixed.nu = FALSE){
     l = length(params)
     
     ## Taken from sn:::mst.pdev.grad
@@ -79,22 +79,35 @@ gradDevMST = function(x, params, w = rep(1, nrow(x))){
     dt.dQ <- (-0.5) * L * sf/(Q + nu)
     logT. <- pt(t., nu + d, log.p = TRUE)
     dlogT. <- exp(dt(t., nu + d, log = TRUE) - logT.)
-    Dbeta <- (-2 * t(x) %*% (u.w * dlogft) %*% Oinv - outer(as.vector(t(x) %*% 
-        (dlogT. * dt.dL * w)), eta) - 2 * t(x) %*% (dlogT. * 
-        dt.dQ * u.w) %*% Oinv)
-    Deta <- colSums(dlogT. * sf * u.w)
+#     Dbeta <- (-2 * t(x) %*% (u.w * dlogft) %*% Oinv - outer(as.vector(t(x) %*% 
+#         (dlogT. * dt.dL * w)), eta) - 2 * t(x) %*% (dlogT. * 
+#         dt.dQ * u.w) %*% Oinv)
+    M1 = vecOuterMult(-2 * x, u.w * dlogft)
+    M2 = vecOuterMult(2 * x, (dlogT. * dt.dQ * u.w))
+    M3 = vecOuterMult(x * (dlogT. * dt.dL * w), outer(rep(1, nrow(x)), eta))
+    Dbeta <- mapply(function(m1, m2, m3){
+        (m1 - m2) %*% Oinv - m3
+    }, M1, M2, M3)
+    Deta <- dlogT. * sf * u.w
     if (d > 1) {
-        M <- 2 * (diag(D, d, d) %*% A %*% t(u * dlogft + u * 
-            dlogT. * dt.dQ) %*% u.w)
-        DA <- M[!lower.tri(M, diag = TRUE)]
+        M <- lapply(vecOuterMult(u * dlogft + u * dlogT. * dt.dQ, u.w),
+                    function(mat){
+                        2 * (diag(D, d, d) %*% A %*% mat)
+                    })
+        DA <- lapply(M, function(x) x[!lower.tri(x, diag = TRUE)])
     } else {
         DA <- NULL
     }
-    M <- (A %*% t(u * dlogft + u * dlogT. * dt.dQ) %*% u.w %*% t(A))
+    M <- lapply(vecOuterMult(u * dlogft + u * dlogT. * dt.dQ, u.w), function(mat)
+        A %*% mat %*% t(A))
     if (d > 1){ 
-        DD <- diag(M) + 0.5 * sum(w)/D
+        DD <- mapply(function(mat, weight){
+            diag(mat) + 0.5 * weight/D
+        }, mat = M, weight = w)
     } else {
-        DD <- as.vector(M + 0.5 * sum(w)/D)
+        DD <- mapply(fun(mat, weight){
+            mat + 0.5 * weight / D
+        }, mat = M, weight = w)
     }
     grad <- (-2) * c(Dbeta, DD * (-2 * D), DA, if (!symmetr) Deta)
     if (is.null(fixed.nu)) {
