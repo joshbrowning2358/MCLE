@@ -12,3 +12,55 @@ test_that("Univariate Normal functions are ok:", {
     expect_equal(as.numeric(round(-nGrad, 4)),
                  round(gradDevUN(x = -2, params = c(0, 1)), 4))
 })
+
+test_that("Multivariate Normal functions are ok:", {
+})
+
+test_that("Univariate Skew Normal functions are ok:", {
+})
+
+test_that("Multivariate Skew Normal functions are ok:", {
+})
+
+test_that("Univariate t functions are ok:", {
+})
+
+test_that("Multivariate t functions are ok:", {
+})
+
+test_that("Univariate skew t functions are ok:", {
+})
+
+test_that("Multivariate skew t functions are ok:", {
+    params = list(xi = c(1, -1), Omega = diag(c(2.2, 1.3)),
+                  alpha = c(2, -1), nu = 231)
+
+    # Define some objects to avoid typing params again
+    myDmst = function(x){
+        -2 * sn::dmst(x, log = TRUE, xi = params$xi, Omega = params$Omega,
+                 alpha = params$alpha, nu = params$nu)
+    }
+    stParams = paramList2VecMST(params)
+
+    # Density functions
+    expect_equal(myDmst(c(3, 1)), devMST(matrix(c(3, 1), nrow = 1),
+                                        params = stParams))
+    expect_equal(c(myDmst(c(2, -2)), myDmst(c(-1, 3))),
+                 devMST(matrix(c(2, -2, -1, 3), nrow = 2, byrow = TRUE),
+                        params = stParams))
+    
+    # Gradient functions
+    snGrad = sn:::mst.pdev.grad(stParams, x = matrix(1),
+                                y = matrix(c(2, 3), nrow = 1), w = 1)
+    myGrad = gradDevMST(x = matrix(c(2, 3), nrow = 1), stParams)
+    # Just ensure they're close
+    expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
+    y = matrix(rnorm(30), nrow = 10)
+    stParams = paramList2VecMST(list(xi = rnorm(3), Omega = diag(rnorm(3)^2),
+                                     alpha = rnorm(3), nu = exp(rnorm(1))))
+    snGrad = sn:::mst.pdev.grad(stParams, x = matrix(1, nrow = 10),
+                                y = y, w = 1)
+    myGrad = gradDevMST(x = y, stParams)
+    myGrad = colSums(myGrad)
+    expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
+})

@@ -41,7 +41,13 @@ devMST = function(x, params, w = rep(1, nrow(x)), fixed.nu = NULL,
     return(dev)
 }
 
-gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE, fixed.nu = FALSE){
+# x = matrix(rnorm(20), nrow = 10)
+# params = c(rep(0, 7), log(100))
+# w = rep(1, nrow(x))
+# symmetr = FALSE
+# fixed.nu = NULL
+gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
+                      fixed.nu = NULL){
     l = length(params)
     
     ## Taken from sn:::mst.pdev.grad
@@ -51,14 +57,14 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE, fixed.nu 
     D <- exp(-2 * params[(p * d + 1):(p * d + d)])
     A <- diag(d)
     i0 <- p * d + d * (d + 1)/2
-    if (d > 1) 
+    if(d > 1)
         A[!lower.tri(A, diag = TRUE)] <- params[(p * d + d + 1):i0]
-    if (symmetr){
+    if(symmetr){
         eta <- rep(0, d)
     } else {
         eta <- params[(i0 + 1):(i0 + d)]
     }
-    if (is.null(fixed.nu)){
+    if(is.null(fixed.nu)){
         nu <- exp(params[length(params)])
     } else {
         nu <- fixed.nu
@@ -68,7 +74,7 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE, fixed.nu 
     u.w <- u * w
     Q <- as.vector(rowSums((u %*% Oinv) * u.w))
     L <- as.vector(u.w %*% eta)
-    if (nu < 10000){
+    if(nu < 10000){
         sf <- sqrt((nu + d)/(nu + Q))
     } else {
         sf <- sqrt((1 + d/nu)/(1 + Q/nu))
@@ -79,39 +85,40 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE, fixed.nu 
     dt.dQ <- (-0.5) * L * sf/(Q + nu)
     logT. <- pt(t., nu + d, log.p = TRUE)
     dlogT. <- exp(dt(t., nu + d, log = TRUE) - logT.)
-    stop("x isn't what you're calling x!  It's the matrix of 1's!!!")
 #     Dbeta <- (-2 * t(x) %*% (u.w * dlogft) %*% Oinv - outer(as.vector(t(x) %*% 
 #         (dlogT. * dt.dL * w)), eta) - 2 * t(x) %*% (dlogT. * 
 #         dt.dQ * u.w) %*% Oinv)
-    M1 = apply((u.w * dlogft), 1, function(vec){vec %*% Oinv})
-    M2 = vecOuterMult(2 * x, (dlogT. * dt.dQ * u.w))
-    M3 = vecOuterMult(x * (dlogT. * dt.dL * w), outer(rep(1, nrow(x)), eta))
-    Dbeta <- mapply(function(m1, m2, m3){
-        (m1 - m2) %*% Oinv - m3
-    }, M1, M2, M3)
+    toMult = -2 * u.w * (dlogft + dlogT. * dt.dQ)
+    # Vectorize the matrix multiplication
+    M1 = sapply(split(toMult, row(toMult)), function(vec){vec %*% Oinv})
+    M1 = t(M1)
+    M2 = matrix(dlogT. * dt.dL * w, ncol = 1) %*% eta
+    Dbeta = M1 - M2
     Deta <- dlogT. * sf * u.w
-    if (d > 1) {
+    if(d > 1){
         M <- lapply(vecOuterMult(u * dlogft + u * dlogT. * dt.dQ, u.w),
                     function(mat){
                         2 * (diag(D, d, d) %*% A %*% mat)
                     })
         DA <- lapply(M, function(x) x[!lower.tri(x, diag = TRUE)])
+        DA = do.call("rbind", DA)
     } else {
         DA <- NULL
     }
-    M <- lapply(vecOuterMult(u * dlogft + u * dlogT. * dt.dQ, u.w), function(mat)
-        A %*% mat %*% t(A))
-    if (d > 1){ 
+    M <- lapply(vecOuterMult(u * dlogft + u * dlogT. * dt.dQ, u.w),
+                function(mat) A %*% mat %*% t(A))
+    if(d > 1){
         DD <- mapply(function(mat, weight){
             diag(mat) + 0.5 * weight/D
         }, mat = M, weight = w)
+        DD = t(DD)
     } else {
-        DD <- mapply(fun(mat, weight){
+        DD <- mapply(function(mat, weight){
             mat + 0.5 * weight / D
         }, mat = M, weight = w)
     }
-    stop("Keep adjusting here!!!")
-    grad <- (-2) * c(Dbeta, DD * (-2 * D), DA, if (!symmetr) Deta)
+    DD = DD * -2 * matrix(D, nrow = nrow(x), ncol = ncol(DD), byrow = TRUE)
+    grad <- (-2) * cbind(Dbeta, DD, DA, if (!symmetr) Deta)
     if (is.null(fixed.nu)) {
         df0 <- min(nu, 1e+08)
         if (df0 < 10000) {
@@ -132,8 +139,8 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE, fixed.nu 
         }
         logT.eps <- pt(L * sf1, df1 + d, log.p = TRUE)
         dlogT.ddf <- (logT.eps - logT.)/eps
-        Ddf <- sum((dlogft.ddf + dlogT.ddf) * w)
-        grad <- c(grad, -2 * Ddf * df0)
+        Ddf <- (dlogft.ddf + dlogT.ddf) * w
+        grad <- cbind(grad, -2 * Ddf * df0)
     }
     return(grad)
 }
