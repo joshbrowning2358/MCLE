@@ -59,7 +59,25 @@ test_that("Multivariate skew t functions are ok:", {
     stParams = paramList2VecMST(list(xi = rnorm(3), Omega = diag(rnorm(3)^2),
                                      alpha = rnorm(3), nu = exp(rnorm(1))))
     snGrad = sn:::mst.pdev.grad(stParams, x = matrix(1, nrow = 10),
-                                y = y, w = 1)
+                                y = y, w = rep(1, 10))
+    myGrad = gradDevMST(x = y, stParams)
+    myGrad = colSums(myGrad)
+    expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
+    # apply mst.pdev.grad and ensure it gives the same matrix
+    yList = lapply(split(y, row(y)), matrix, nrow = 1)
+    snVec = sapply(yList, sn:::mst.pdev.grad, param = stParams,
+                   x = matrix(1, nrow = 1), w = 1)
+    myGrad = gradDevMST(x = y, stParams)
+    expect_less_than(max(abs(t(snVec) - myGrad)), 1e-8)
+    # Omega with off-diagonal
+    Omega = diag(abs(rnorm(3)) + 1)
+    Omega[upper.tri(Omega)] = runif(3, min = -1, max = 1)
+    Omega[lower.tri(Omega)] = Omega[upper.tri(Omega)]
+    stParams = paramList2VecMST(list(xi = rnorm(3), Omega = Omega,
+                                     alpha = rnorm(3), nu = exp(rnorm(1))))
+    y = matrix(rnorm(30), nrow = 10)
+    snGrad = sn:::mst.pdev.grad(stParams, x = matrix(1, nrow = 10),
+                                y = y, w = rep(1, 10))
     myGrad = gradDevMST(x = y, stParams)
     myGrad = colSums(myGrad)
     expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
