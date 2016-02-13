@@ -44,8 +44,8 @@
 ##'            paramVec2List = paramVec2ListMST)
 ##' initial = list(beta = c(0, 0), Omega = diag(c(1, 1)),
 ##'                alpha = c(0, 0), nu = 100)
-##' naiveMLE(data, dist = mst, initial)
-##' naiveMLE(data, dist = mst, initial, returnOptim = TRUE)
+##' MCLE(data, dist = mst, initial)
+##' MCLE(data, dist = mst, initial, returnOptim = TRUE)
 ##' 
 ##' data = matrix(rnorm(100), nrow = 100)
 ##' ust = list(dev = devUST, grad = gradDevUST,
@@ -63,7 +63,7 @@
 ##'            paramList2Vec = paramList2VecPsn,
 ##'            paramVec2List = paramVec2ListPsn)
 ##' initial = list(lambda = 1)
-##' naiveMLE(data, dist = dist, initial)
+##' MCLE(data, dist = dist, initial)
 ##' mean(data)
 ##' }
 ##' 
@@ -91,11 +91,11 @@ MCLE = function(data, dist, initial, w = rep(1, NROW(data)), returnOptim = FALSE
     
     initialVec = dist$paramList2Vec(initial)
     fn = function(par){
-        sum(constraintFunc(sapply(data, dist$dev, params = par, w = w)))
+        sum(constraintFunc(dist$dev(data, params = par, w = w)))
     }
     gr = function(par){
         # Chain rule: d/dtheta(f(L(x))) = f'(L(x)) * d/dtheta(L(x))
-        sum(constraintFuncDeriv(sapply(data, dist$dev, params = par, w = w))) *
+        constraintFuncDeriv(dist$dev(data, params = par, w = w)) %*%
             dist$grad(x = data, params = par, w = w)
     }
     optimResult = optim(initialVec, fn = fn, gr = gr)
