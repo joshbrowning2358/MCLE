@@ -9,9 +9,9 @@
 ##' 
 ##' @param x A numeric matrix of observations (one row per observation).
 ##' @param params A vector, typically as created by paramList2Vec called on a 
-##'   list object with four elements: beta, Omega, alpha, nu.
+##'   list object with four elements: xi, Omega, alpha, nu.
 ##' @param paramVec A vector of the parameters of the multivariate distribution.
-##' @param paramList A list with four elements: beta (a vector prodiving the 
+##' @param paramList A list with four elements: xi (a vector prodiving the 
 ##'   center), Omega (a matrix describing the dispersion), alpha (a vector 
 ##'   describing the skewness), and nu (a numeric providing the heaviness of the
 ##'   tails).
@@ -155,5 +155,6 @@ paramVec2ListMST = function(paramVec){
 }
 
 paramList2VecMST = function(paramList){
+    stopifnot(names(paramList) %in% c("xi", "Omega", "alpha", "nu"))
     sn:::dplist2optpar(paramList)
 }

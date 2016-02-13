@@ -26,6 +26,54 @@ test_that("Univariate t functions are ok:", {
 })
 
 test_that("Multivariate t functions are ok:", {
+    params = list(xi = c(1, -1), Omega = diag(c(2.2, 1.3)), nu = 231)
+
+    # Define some objects to avoid typing params again
+    myDmt = function(x){
+        -2 * sn::dmst(x, log = TRUE, xi = params$xi, Omega = params$Omega,
+                 alpha = c(0, 0), nu = params$nu)
+    }
+    tParams = paramList2VecMT(params)
+
+    # Density functions
+    expect_equal(myDmt(c(3, 1)), devMT(matrix(c(3, 1), nrow = 1),
+                                       params = tParams))
+    expect_equal(c(myDmt(c(2, -2)), myDmt(c(-1, 3))),
+                 devMT(matrix(c(2, -2, -1, 3), nrow = 2, byrow = TRUE),
+                        params = tParams))
+    
+    # Gradient functions
+    snGrad = sn:::mst.pdev.grad(tParams, x = matrix(1), symmetr = TRUE,
+                                y = matrix(c(2, 3), nrow = 1), w = 1)
+    myGrad = gradDevMT(x = matrix(c(2, 3), nrow = 1), tParams)
+    # Just ensure they're close
+    expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
+    y = matrix(rnorm(30), nrow = 10)
+    tParams = paramList2VecMT(list(xi = rnorm(3), Omega = diag(rnorm(3)^2),
+                                   nu = exp(rnorm(1))))
+    snGrad = sn:::mst.pdev.grad(tParams, x = matrix(1, nrow = 10),
+                                y = y, w = rep(1, 10), symmetr = TRUE)
+    myGrad = gradDevMT(x = y, tParams)
+    myGrad = colSums(myGrad)
+    expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
+    # apply mst.pdev.grad and ensure it gives the same matrix
+    yList = lapply(split(y, row(y)), matrix, nrow = 1)
+    snVec = sapply(yList, sn:::mst.pdev.grad, param = tParams,
+                   x = matrix(1, nrow = 1), w = 1, symmetr = TRUE)
+    myGrad = gradDevMT(x = y, tParams)
+    expect_less_than(max(abs(t(snVec) - myGrad)), 1e-8)
+    # Omega with off-diagonal
+    Omega = diag(abs(rnorm(3)) + 1)
+    Omega[upper.tri(Omega)] = runif(3, min = -1, max = 1)
+    Omega[lower.tri(Omega)] = Omega[upper.tri(Omega)]
+    tParams = paramList2VecMT(list(xi = rnorm(3), Omega = Omega,
+                                   nu = exp(rnorm(1))))
+    y = matrix(rnorm(30), nrow = 10)
+    snGrad = sn:::mst.pdev.grad(tParams, x = matrix(1, nrow = 10),
+                                y = y, w = rep(1, 10), symmetr = TRUE)
+    myGrad = gradDevMT(x = y, tParams)
+    myGrad = colSums(myGrad)
+    expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
 })
 
 test_that("Univariate skew t functions are ok:", {

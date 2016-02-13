@@ -9,9 +9,9 @@
 ##' 
 ##' @param x A numeric matrix of observations (one row per observation).
 ##' @param params A vector, typically as created by paramList2Vec called on a 
-##'   list object with three elements: beta, Omega, nu.
+##'   list object with three elements: xi, Omega, nu.
 ##' @param paramVec A vector of the parameters of the multivariate distribution.
-##' @param paramList A list with three elements: beta (a vector prodiving the 
+##' @param paramList A list with three elements: xi (a vector prodiving the 
 ##'   center), Omega (a matrix describing the dispersion), and nu (a numeric
 ##'   providing the heaviness of the tails).
 ##'   
@@ -23,7 +23,7 @@ devMT = function(x, params, w = rep(1, NROW(x))){
     devMST(x = x, params = params, w = w, symmetr = TRUE)
 }
 
-gradDevMT = function(x, params){
+gradDevMT = function(x, params, w = rep(1, NROW(x))){
     gradDevMST(x = x, params = params, w = w, symmetr = TRUE)
 }
 
@@ -42,9 +42,10 @@ paramVec2ListMT = function(paramVec){
 }
 
 paramList2VecMT = function(paramList){
-    l = length(paramList$beta)
+    stopifnot(names(paramList) %in% c("xi", "Omega", "nu"))
+    l = length(paramList$xi)
     paramList$alpha = rep(0, l)
-    paramList = paramList[c("beta", "Omega", "alpha", "nu")]
+    paramList = paramList[c("xi", "Omega", "alpha", "nu")]
     out = sn:::dplist2optpar(paramList)
     out = out[c(1:(l + l*(l+1)/2), length(out))]
     return(out)
