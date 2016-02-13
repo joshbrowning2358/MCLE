@@ -47,6 +47,13 @@
 ##' MCLE(data, dist = mst, initial)
 ##' MCLE(data, dist = mst, initial, returnOptim = TRUE)
 ##' 
+##' data = matrix(rnorm(200), nrow = 100)
+##' mt = list(dev = devMT, grad = gradDevMT,
+##'           paramList2Vec = paramList2VecMT,
+##'           paramVec2List = paramVec2ListMT)
+##' initial = list(beta = c(0, 0), Omega = diag(c(1, 1)), nu = 100)
+##' MCLE(data, dist = mt, initial)
+##' 
 ##' data = matrix(rnorm(100), nrow = 100)
 ##' ust = list(dev = devUST, grad = gradDevUST,
 ##'            paramList2Vec = paramList2VecUST,

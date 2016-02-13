@@ -19,25 +19,12 @@
 NULL
 
 ##' @rdname multivariateT
-devMT = function(x, params){
-    l = length(params)
-    ## Add in 0's for alpha:
-    params = c(params[1:(l-1)], rep(0, ncol(x)), params[l])
-    out = apply(x, 1, function(data){
-        sn:::mst.pdev(y = matrix(data, nrow = 1), x = matrix(1), param = params)
-    })
-    return(out)
+devMT = function(x, params, w = rep(1, NROW(x))){
+    devMST(x = x, params = params, w = w, symmetr = TRUE)
 }
 
 gradDevMT = function(x, params){
-    l = length(params)
-    ## Add in 0's for alpha:
-    params = c(params[1:(l-1)], rep(0, ncol(x)), params[l])
-    out = apply(x, 1, function(data){
-        sn:::mst.pdev.grad(y = matrix(data, nrow = 1), x = matrix(1),
-                           param = params)
-    })
-    return(out)
+    gradDevMST(x = x, params = params, w = w, symmetr = TRUE)
 }
 
 paramVec2ListMT = function(paramVec){
@@ -46,15 +33,19 @@ paramVec2ListMT = function(paramVec){
     # Quadratic formula to get:
     d = -3/2 + sqrt((3/2)^2 - 4 * 1/2 * (1-length(paramVec))) / 
         (2 * 1/2)
+    # Add alpha onto paramVec
+    paramVec = c(paramVec[1:(length(paramVec)-1)], rep(0, d),
+                 paramVec[length(paramVec)])
     out = sn:::optpar2dplist(paramVec, p = 1, d = d)$dp
     out$alpha = NULL
     return(out)
 }
 
 paramList2VecMT = function(paramList){
-    l = length(paramList$mu)
+    l = length(paramList$beta)
     paramList$alpha = rep(0, l)
-    paramList = paramList[c("mu", "sigma", "alpha", "nu")]
+    paramList = paramList[c("beta", "Omega", "alpha", "nu")]
     out = sn:::dplist2optpar(paramList)
     out = out[c(1:(l + l*(l+1)/2), length(out))]
+    return(out)
 }
