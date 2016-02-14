@@ -8,31 +8,29 @@
 ##' deviance.  The other two functions are useful for converting parameter 
 ##' vectors to lists and vice versa, and thus they return the list or vector.
 ##' 
+##' Note: the multivariate skew normal distribution is implemented as a 
+##' multivariate skew t-distribution with nu parameter equal to 1e8.  This leads
+##' to minimal differences between the two distributions.
+##' 
 ##' @param x A matrix of observations with one row per observation.
 ##' @param params A vector, typically as created by paramList2Vec called on a 
-##'   list object with three elements: mu (a numeric vector) sigma (a matrix),
+##'   list object with three elements: xi (a numeric vector) Omega (a matrix),
 ##'   and alpha (a numeric vector).
 ##' @param paramVec A vector of the parameters of the multivariate distribution.
-##' @param paramList A list with three elements: mean (a numeric vector), sigma
+##' @param paramList A list with three elements: xi (a numeric vector), Omega
 ##'   (a numeric matrix) and alpha (a numeric vector).
 ##'   
 ##' @name multivariateSkewNormal
 NULL
 
 ##' @rdname multivariateSkewNormal
-
-devMSN = function(x, params){
-    n = nrow(x)
-    out = apply(x, 1, function(data){
-        sn:::msn.pdev(y = matrix(data, nrow = 1), param = params,
-                      x = matrix(1))
-    })
-    return(out)
+devMSN = function(x, params, w = rep(1, NROW(x))){
+    devMST(x = x, params = params, w = w, fixed.nu = 1e8)
 }
 
 ##' @rdname multivariateSkewNormal
 gradDevMSN = function(x, params){
-    stop("There is no built in function for this!!!")
+    gradDevMST(x = x, params = params, w = w, fixed.nu = 1e8)
 }
 
 ##' @rdname multivariateSkewNormal
@@ -41,13 +39,16 @@ paramVec2ListMSN = function(paramVec){
     ## d^2 + 5d - 2*len = 0
     d = (-5 + sqrt(25 + 8 * length(paramVec))) / 2
     out = sn:::optpar2dplist(paramVec, p = 1, d = d)$dp
-    names(out) = c("mu", "sigma", "alpha")
+    names(out) = c("xi", "Omega", "alpha")
     return(out)
 }
 
 ##' @rdname multivariateSkewNormal
 paramList2VecMSN = function(paramList){
-    d = length(paramList[[1]])
+    stopifnot(names(paramList) %in% c("xi", "Omega", "alpha"))
+    paramList$nu = 1e8
     paramVec = sn:::dplist2optpar(paramList)
+    # Remove nu from vec:
+    paramVec = paramVec[-length(paramVec)]
     return(paramVec)
 }

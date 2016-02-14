@@ -27,8 +27,9 @@ devMST = function(x, params, w = rep(1, nrow(x)), fixed.nu = NULL,
     d <- ncol(x)
     p <- 1
     npar0 <- (p * d + d * (d + 1)/2)
-    param1 <- c(params[1:npar0], if (symmetr) rep(0, d) else params[npar0 + 
-        (1:d)], if (is.null(fixed.nu)) params[length(params)])
+    param1 <- c(params[1:npar0],
+                if (symmetr) rep(0, d) else params[npar0 + (1:d)],
+                if (is.null(fixed.nu)) params[length(params)] else log(fixed.nu))
     dp <- paramVec2ListMST(param1)
     if (is.null(fixed.nu)){
         nu = dp$nu

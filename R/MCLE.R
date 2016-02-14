@@ -38,6 +38,12 @@
 ##' mean(data)
 ##' sd(data)
 ##' 
+##' ust = list(dev = devUST, grad = gradDevUST,
+##'            paramList2Vec = paramList2VecUST,
+##'            paramVec2List = paramVec2ListUST)
+##' initial = list(xi = 0, omega = 1, alpha = 0, nu = 100)
+##' MCLE(data, dist = ust, initial)
+##' 
 ##' data = matrix(rnorm(200), nrow = 100)
 ##' mst = list(dev = devMST, grad = gradDevMST,
 ##'            paramList2Vec = paramList2VecMST,
@@ -45,24 +51,18 @@
 ##' initial = list(beta = c(0, 0), Omega = diag(c(1, 1)),
 ##'                alpha = c(0, 0), nu = 100)
 ##' MCLE(data, dist = mst, initial)
-##' MCLE(data, dist = mst, initial, returnOptim = TRUE)
 ##' 
-##' data = matrix(rnorm(200), nrow = 100)
 ##' mt = list(dev = devMT, grad = gradDevMT,
 ##'           paramList2Vec = paramList2VecMT,
 ##'           paramVec2List = paramVec2ListMT)
 ##' initial = list(beta = c(0, 0), Omega = diag(c(1, 1)), nu = 100)
 ##' MCLE(data, dist = mt, initial)
 ##' 
-##' data = matrix(rnorm(100), nrow = 100)
-##' ust = list(dev = devUST, grad = gradDevUST,
-##'            paramList2Vec = paramList2VecUST,
-##'            paramVec2List = paramVec2ListUST)
-##' initial = list(xi = 0, omega = 1, alpha = 0, nu = 100)
-##' MCLE(data, dist = ust, initial)
-##' MCLE(data, dist = ust, initial, returnOptim = TRUE)
-##' mean(data)
-##' sd(data)
+##' msn = list(dev = devMSN, grad = gradDevMSN,
+##'           paramList2Vec = paramList2VecMSN,
+##'           paramVec2List = paramVec2ListMSN)
+##' initial = list(beta = c(0, 0), Omega = diag(c(1, 1)), alpha = c(0, 0))
+##' MCLE(data, dist = msn, initial)
 ##' 
 ##' data = rpois(30, lambda = 4.7)
 ##' data = c(data, 100)
