@@ -17,6 +17,53 @@ test_that("Univariate Normal functions are ok:", {
 })
 
 test_that("Multivariate Normal functions are ok:", {
+    params = list(xi = c(1, -1), Omega = diag(c(2.2, 1.3)))
+
+    # Define some objects to avoid typing params again
+    myDmn = function(x){
+        -2 * sn::dmst(x, log = TRUE, xi = params$xi, Omega = params$Omega,
+                 alpha = c(0, 0), nu = 1e8)
+    }
+    nParams = paramList2VecMN(params)
+
+    # Density functions
+    expect_equal(myDmn(c(3, 1)), devMN(matrix(c(3, 1), nrow = 1),
+                                       params = nParams))
+    expect_equal(c(myDmn(c(2, -2)), myDmn(c(-1, 3))),
+                 devMN(matrix(c(2, -2, -1, 3), nrow = 2, byrow = TRUE),
+                        params = nParams))
+    
+    # Gradient functions
+    snGrad = sn:::mst.pdev.grad(nParams, x = matrix(1), fixed.nu = 1e8,
+                                y = matrix(c(2, 3), nrow = 1), w = 1,
+                                symmetr = TRUE)
+    myGrad = gradDevMN(x = matrix(c(2, 3), nrow = 1), nParams)
+    # Just ensure they're close
+    expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
+    y = matrix(rnorm(30), nrow = 10)
+    nParams = paramList2VecMN(list(xi = rnorm(3), Omega = diag(rnorm(3)^2)))
+    snGrad = sn:::mst.pdev.grad(snParams, x = matrix(1, nrow = 10), symmetr = TRUE,
+                                y = y, w = rep(1, 10), fixed.nu = 1e8)
+    myGrad = gradDevMN(x = y, snParams)
+    myGrad = colSums(myGrad)
+    expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
+    # apply mst.pdev.grad and ensure it gives the same matrix
+    yList = lapply(split(y, row(y)), matrix, nrow = 1)
+    snVec = sapply(yList, sn:::mst.pdev.grad, param = nParams, symmetr = TRUE,
+                   x = matrix(1, nrow = 1), w = 1, fixed.nu = 1e8)
+    myGrad = gradDevMN(x = y, nParams)
+    expect_less_than(max(abs(t(snVec) - myGrad)), 1e-8)
+    # Omega with off-diagonal
+    Omega = diag(abs(rnorm(3)) + 1)
+    Omega[upper.tri(Omega)] = runif(3, min = -1, max = 1)
+    Omega[lower.tri(Omega)] = Omega[upper.tri(Omega)]
+    nParams = paramList2VecMN(list(xi = rnorm(3), Omega = Omega))
+    y = matrix(rnorm(30), nrow = 10)
+    snGrad = sn:::mst.pdev.grad(nParams, x = matrix(1, nrow = 10), symmetr = TRUE,
+                                y = y, w = rep(1, 10), fixed.nu = 1e8)
+    myGrad = gradDevMN(x = y, nParams)
+    myGrad = colSums(myGrad)
+    expect_less_than(max(abs(snGrad - myGrad)), 1e-8)
 })
 
 test_that("Univariate Skew Normal functions are ok:", {

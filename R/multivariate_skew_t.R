@@ -92,7 +92,12 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
     toMult = -2 * u.w * (dlogft + dlogT. * dt.dQ)
     # Vectorize the matrix multiplication
     M1 = sapply(split(toMult, row(toMult)), function(vec){vec %*% Oinv})
-    M1 = t(M1)
+    if(d != 1){
+        M1 = t(M1)
+    } else {
+        # If d == 1, the 1 column matrix becomes a vector, so we must coerce back.
+        M1 = matrix(M1, ncol = 1)
+    }
     M2 = matrix(dlogT. * dt.dL * w, ncol = 1) %*% eta
     Dbeta = M1 - M2
     Deta <- dlogT. * sf * u.w
@@ -117,6 +122,7 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
         DD <- mapply(function(mat, weight){
             mat + 0.5 * weight / D
         }, mat = M, weight = w)
+        DD = matrix(DD, ncol = 1)
     }
     DD = DD * -2 * matrix(D, nrow = nrow(x), ncol = ncol(DD), byrow = TRUE)
     grad <- (-2) * cbind(Dbeta, DD, DA, if (!symmetr) Deta)
