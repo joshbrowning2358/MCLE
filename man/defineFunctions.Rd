@@ -4,14 +4,11 @@
 \alias{defineFunctions}
 \title{Define functions}
 \usage{
-defineFunctions(distribution, dimension = 1)
+defineFunctions(distribution)
 }
 \arguments{
 \item{distribution}{A character value, currently allowed to be one of 
 "normal", "student t", "skew normal" or "skew t".}
-
-\item{dimension}{A numeric value specifying the dimensionality of the
-distribution.}
 }
 \value{
 An object containing the relevant functions.

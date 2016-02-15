@@ -2,25 +2,37 @@
 ##' 
 ##' @param distribution A character value, currently allowed to be one of 
 ##'   "normal", "student t", "skew normal" or "skew t".
-##' @param dimension A numeric value specifying the dimensionality of the
-##'   distribution.
 ##' 
 ##' @return An object containing the relevant functions.
 ##' 
 ##' @export
 ##' 
 
-defineFunctions = function(distribution, dimension = 1){
+defineFunctions = function(distribution){
     # Data Quality Checks
     stopifnot(distribution %in% c("normal", "student-t", "skew normal", "skew-t"))
-    stopifnot(is.numeric(dimension) & dimension >= 1)
     
     # Extract relevant functions
-    if(distribution == "normal" & dimension == 1){
-        deviance = devUN
-        gradDeviance = gradDevUN
-        paramVec2List = paramVec2ListUN
-        paramList2Vec = paramList2VecUN
+    if(distribution == "normal"){
+        deviance = devMN
+        gradDeviance = gradDevMN
+        paramVec2List = paramVec2ListMN
+        paramList2Vec = paramList2VecMN
+    } else if(distribution == "skew normal"){
+        deviance = devMSN
+        gradDeviance = gradDevMSN
+        paramVec2List = paramVec2ListMSN
+        paramList2Vec = paramList2VecMSN
+    } else if(distribution == "student-t"){
+        deviance = devMT
+        gradDeviance = gradDevMT
+        paramVec2List = paramVec2ListMT
+        paramList2Vec = paramList2VecMT
+    } else if(distribution == "skew-t"){
+        deviance = devMST
+        gradDeviance = gradDevMST
+        paramVec2List = paramVec2ListMST
+        paramList2Vec = paramList2VecMST
     } else {
         stop("Not yet implemented!")
     }

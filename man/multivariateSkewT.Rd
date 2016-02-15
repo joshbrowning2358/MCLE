@@ -2,20 +2,30 @@
 % Please edit documentation in R/multivariate_skew_t.R
 \name{multivariateSkewT}
 \alias{devMST}
+\alias{gradDevMST}
 \alias{multivariateSkewT}
+\alias{paramList2VecMST}
+\alias{paramVec2ListMST}
 \title{Multivariate Skew-t}
 \usage{
-devMST(x, params)
+devMST(x, params, w = rep(1, nrow(x)), fixed.nu = NULL, symmetr = FALSE)
+
+gradDevMST(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
+  fixed.nu = NULL)
+
+paramVec2ListMST(paramVec)
+
+paramList2VecMST(paramList)
 }
 \arguments{
 \item{x}{A numeric matrix of observations (one row per observation).}
 
 \item{params}{A vector, typically as created by paramList2Vec called on a 
-list object with four elements: beta, Omega, alpha, nu.}
+list object with four elements: xi, Omega, alpha, nu.}
 
 \item{paramVec}{A vector of the parameters of the multivariate distribution.}
 
-\item{paramList}{A list with four elements: beta (a vector prodiving the 
+\item{paramList}{A list with four elements: xi (a vector prodiving the 
 center), Omega (a matrix describing the dispersion), alpha (a vector 
 describing the skewness), and nu (a numeric providing the heaviness of the
 tails).}

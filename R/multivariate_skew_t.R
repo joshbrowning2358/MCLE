@@ -42,11 +42,7 @@ devMST = function(x, params, w = rep(1, nrow(x)), fixed.nu = NULL,
     return(dev)
 }
 
-# x = matrix(rnorm(20), nrow = 10)
-# params = c(rep(0, 7), log(100))
-# w = rep(1, nrow(x))
-# symmetr = FALSE
-# fixed.nu = NULL
+##' @rdname multivariateSkewT
 gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
                       fixed.nu = NULL){
     l = length(params)
@@ -152,6 +148,7 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
     return(grad)
 }
 
+##' @rdname multivariateSkewT
 paramVec2ListMST = function(paramVec){
     # d + d*(d+1)/2 + d + 1 = length(paramVec)
     # d^2/2 + 5d/2 + 1 - length(paramVec) = 0
@@ -161,6 +158,7 @@ paramVec2ListMST = function(paramVec){
     sn:::optpar2dplist(paramVec, p = 1, d = d)$dp
 }
 
+##' @rdname multivariateSkewT
 paramList2VecMST = function(paramList){
     stopifnot(names(paramList) %in% c("xi", "Omega", "alpha", "nu"))
     sn:::dplist2optpar(paramList)

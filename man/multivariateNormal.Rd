@@ -8,7 +8,7 @@
 \alias{paramVec2ListMN}
 \title{Multivariate Normal}
 \usage{
-devMN(x, params)
+devMN(x, params, w = rep(1, nrow(x)))
 
 gradDevMN(x, params)
 
@@ -20,11 +20,11 @@ paramList2VecMN(paramList)
 \item{x}{A matrix of observations with one row per observation.}
 
 \item{params}{A vector, typically as created by paramList2Vec called on a 
-list object with two elements: mu (a numeric vector) and sigma (a matrix).}
+list object with two elements: xi (a numeric vector) and Omega (a matrix).}
 
 \item{paramVec}{A vector of the parameters of the multivariate distribution.}
 
-\item{paramList}{A list with two elements: mean (a numeric vector) and sigma
+\item{paramList}{A list with two elements: xi (a numeric vector) and Omega
 (a numeric matrix).}
 }
 \description{

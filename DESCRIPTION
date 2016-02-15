@@ -17,5 +17,6 @@ ZipData: no
 VignetteBuilder: knitr
 Suggests:
     knitr,
-    ggplot2
+    ggplot2,
+    testthat
 RoxygenNote: 5.0.1

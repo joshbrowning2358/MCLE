@@ -5,8 +5,10 @@
 ##' matrices and thus cannot be simply multiplied together.  This function
 ##' performs this multiplication for two matrices X and Y.
 ##' 
-##' @param X The first matrix.  Each row contains a (row) vector x, and the final result is the product t(x) %*% y.
-##' @param Y The second matrix.  Each row contains a (row) vector y, and the final result is the product t(x) %*% y.
+##' @param X The first matrix.  Each row contains a (row) vector x, and the
+##'   final result is the outer product: t(x) times y.
+##' @param Y The second matrix.  Each row contains a (row) vector y, and the
+##'   final result is the outer product t(x) times y.
 ##' 
 ##' @return A list containing the results of the various matrix products.
 ##' 

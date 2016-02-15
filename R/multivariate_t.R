@@ -23,10 +23,12 @@ devMT = function(x, params, w = rep(1, NROW(x))){
     devMST(x = x, params = params, w = w, symmetr = TRUE)
 }
 
+##' @rdname multivariateT
 gradDevMT = function(x, params, w = rep(1, NROW(x))){
     gradDevMST(x = x, params = params, w = w, symmetr = TRUE)
 }
 
+##' @rdname multivariateT
 paramVec2ListMT = function(paramVec){
     # d + d*(d+1)/2 + 1 = length(paramVec)
     # d^2/2 + 3d/2 + 1 - length(paramVec) = 0
@@ -41,6 +43,7 @@ paramVec2ListMT = function(paramVec){
     return(out)
 }
 
+##' @rdname multivariateT
 paramList2VecMT = function(paramList){
     stopifnot(names(paramList) %in% c("xi", "Omega", "nu"))
     l = length(paramList$xi)
