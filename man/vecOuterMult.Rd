@@ -25,7 +25,7 @@ performs this multiplication for two matrices X and Y.
 \examples{
 X = matrix(1:10, nrow = 5)
 Y = matrix(1, nrow = 5, ncol = 2)
-vecOuterMult(X, Y)
+MCLE:::vecOuterMult(X, Y)
 
 }
 
