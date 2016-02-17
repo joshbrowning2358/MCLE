@@ -37,8 +37,16 @@
 ##' simulateKvsMAD(sn::rst, dev, xi = -5:5, omega = 10^seq(-3, 3, .5),
 ##'                alpha = -5:5, nu = 10^seq(0, 4, 1/3),
 ##'                quantiles = c(0.8, 0.9, 0.95, 0.99))
-##'   
+##' 
+##' dev = function(x, ...){-2 * sn::dmst(x, ..., log = TRUE)}
+##' simulateKvsMAD(sn::rmst, dev, xi = list(c(-1, -1), c(0, 1), c(-2, 2)),
+##'                Omega = list(diag(2) * .1, diag(2), diag(2)*10),
+##'                alpha = list(c(0, 1)), nu = 10^seq(0, 4, 1/3),
+##'                quantiles = c(0.8, 0.9, 0.95, 0.99))
+##' 
 ##' @export
+##' 
+##' @import ggplot2
 ##' 
 
 simulateKvsMAD = function(rand, dev, quantiles = c(0.95), nSample = 1000, nRuns = 100, ..., logMAD = TRUE){
