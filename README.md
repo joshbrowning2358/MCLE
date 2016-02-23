@@ -13,7 +13,7 @@ While in development mode, I'll keep track of open tasks below:
 - What effect is there when we use the wrong distribution (skew normal when the data is multivariate t?)
 - Which constraint functions work best?  Can we determine some alternatives to the one currently in use?
 - How can we optimally select k?  We currently have three approaches:
-  1 Flatness of the cdf
-  2 Minimum of the density
-  3 MAD (requires a bit of work to fully develop the idea).  However, maybe we can determine a theoretical relationship.
+  * Flatness of the cdf
+  * Minimum of the density
+  * MAD (requires a bit of work to fully develop the idea).  However, maybe we can determine a theoretical relationship.
 - Additional distributions: what else would be interesting?  Check with Mandy.
