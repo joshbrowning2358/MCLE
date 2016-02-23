@@ -6,6 +6,7 @@ Repository to store research code for the robust skew-t fitting project.
 
 While in development mode, I'll keep track of open tasks below:
 
+- Compare speed of your new approach vs. the approach used with Mandy.
 - Read up on the literature, particularly the papers Mandy sent.
 - Define the scope of the project: what questions do we want to answer, what do we want to ignore?
 - Determine when the non-robust model outperforms.  Is this a function of the "extremeness" of the outliers as well as the sample size?
