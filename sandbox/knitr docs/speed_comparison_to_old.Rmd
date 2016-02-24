@@ -1,0 +1,39 @@
+---
+title: "Robust MLE Speed Comparison"
+author: "Josh Browning"
+output: html_document
+---
+
+I've created a package with the new version of the MCLE code:
+
+```{r}
+# Source the old code:
+library(sn)
+library(mnormt)
+library(rbenchmark)
+dir = "~/GitHub/Robust-Skew-t/"
+source(paste0(dir, "sn-funct.R"))
+source(paste0(dir, "modified_mst.pdev.grad.R"))
+source(paste0(dir, "robust_ST_for_mandy.R"))
+```
+
+Now, we can perform a quick speed comparison:
+
+```{r}
+mst = list(dev = MCLE:::devMST, grad = MCLE:::gradDevMST,
+           paramList2Vec = MCLE:::paramList2VecMST,
+           paramVec2List = MCLE:::paramVec2ListMST)
+initialNew = list(xi = c(0, 0), Omega = diag(c(1, 1)),
+                  alpha = c(0, 0), nu = 100)
+initialOld = dplist2optpar(initialNew)
+benchmark(
+    {
+        data = matrix(rnorm(10), ncol = 2)
+        robustST(data, start = initialOld)
+    },
+    {
+        data = matrix(rnorm(10), ncol = 2)
+        MCLE::MCLE(data = data, dist = mst, initial = initialNew)
+    }
+)
+```
