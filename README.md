@@ -17,4 +17,5 @@ While in development mode, I'll keep track of open tasks below:
   * Flatness of the cdf
   * Minimum of the density
   * MAD (requires a bit of work to fully develop the idea).  However, maybe we can determine a theoretical relationship.
+  * If a random number generator from the distribution is provided, as well as an expected number/percent of penalized observations, then we could simulate at the end to check if our parameters/calculated likelihoods lead to the expected percent of penalized observations.  If they do not, we could adjust k and refit.  However, ensuring convergence may be more challenging.
 - Additional distributions: what else would be interesting?  Check with Mandy.
