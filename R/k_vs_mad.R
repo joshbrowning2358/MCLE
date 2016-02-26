@@ -54,10 +54,17 @@ simulateKvsMAD = function(rand, dev, quantiles = c(0.95), nSample = 1000, nRuns 
     results = lapply(1:nRuns, function(dummy){
         # Add additional arguments to call
         if(length(distArgs) > 0){
-            additionalArgs = sapply(1:length(distArgs), function(i){
-                paste(names(distArgs)[i], "=", sample(distArgs[[i]], size = 1))
+            sampledArgs = sapply(distArgs, sample, size = 1)
+            # Assign values to the local environment.  Assignment is done this
+            # way to allow sampling of complex objects like matrices.  Simply
+            # pasting them into arguments is problematic.
+            for(i in 1:length(distArgs)){
+                assign(x = names(sampledArgs)[i], value = sampledArgs[[i]])
+            }
+            additionalArgs = lapply(names(sampledArgs), function(name){
+                paste(",", name, "=", name)
             })
-            additionalArgs = paste(",", paste(additionalArgs, collapse = ", "))
+            additionalArgs = do.call(paste0, additionalArgs)
         } else {
             additionalArgs = ""
         }
@@ -66,19 +73,39 @@ simulateKvsMAD = function(rand, dev, quantiles = c(0.95), nSample = 1000, nRuns 
         runSampleText = paste0("rand(nSample", additionalArgs, ")")
         computeDevText = paste0("dev(sampleData", additionalArgs, ")")
         
+        # Sample data, compute deviance
         sampleData = eval(parse(text = runSampleText))
         sampleDev = eval(parse(text = computeDevText))
+        dimension = NCOL(sampleData)
+        
+        # Calculate relevant statistics
         q = quantile(sampleDev, probs = quantiles)
-        MAD = mad(sampleData)
+        if(dimension > 1){
+            MAD = apply(sampleData, 2, mad)
+            # Collapse to a single number via multiplication
+            MAD = prod(MAD)
+        } else {
+            MAD = mad(sampleData)
+        }
+        
+        # Create output data
         out = data.frame(MAD = MAD, q)
         colnames(out)[2] = "deviance"
         out$quantile = quantiles
+        # Add arguments to output data, but only if all arguments are simple
+        # numerics
+        if(length(sampledArgs) > 0 & all(lapply(sampledArgs, length) == 1)){
+            toMerge = data.frame(matrix(sampledArgs, nrow = 1))
+            colnames(toMerge) = names(distArgs)
+            out = merge(toMerge, out)
+        }
         return(out)
     })
     results = do.call("rbind", results)
     
-    out = ggplot(results, aes(x = MAD, y = deviance, color = quantile)) +
-        geom_point()
+    toPlot = reshape2::melt(results, id.vars = c("quantile", "deviance"))
+    out = ggplot(toPlot, aes(x = value, y = deviance, color = quantile)) +
+        geom_point() + facet_wrap( ~ variable)
     if(logMAD)
         out = out + scale_x_log10()
     out
