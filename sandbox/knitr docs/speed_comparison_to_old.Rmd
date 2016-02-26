@@ -1,7 +1,7 @@
 ---
 title: "Robust MLE Speed Comparison"
 author: "Josh Browning"
-output: html_document
+output: pdf_document
 ---
 
 I've created a package with the new version of the MCLE code:
@@ -36,4 +36,18 @@ benchmark(
         MCLE::MCLE(data = data, dist = mst, initial = initialNew)
     }
 )
+```
+
+And now, let's try it with a larger sample size:
+
+```{r}
+benchmark(
+    {
+        data = matrix(rnorm(500), ncol = 2)
+        robustST(data, start = initialOld)
+    },
+    {
+        data = matrix(rnorm(500), ncol = 2)
+        MCLE::MCLE(data = data, dist = mst, initial = initialNew)
+    }, replications = 10)
 ```
