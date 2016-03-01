@@ -28,53 +28,37 @@
 ##'   
 ##' @examples
 ##' \dontrun{
-##' data = rnorm(100)
-##' uniNorm = list(dev = devUN, grad = gradDevUN,
-##'                paramList2Vec = paramList2VecUN,
-##'                paramVec2List = paramVec2ListUN)
-##' initial = list(mu = 0, omega = 1)
-##' MCLE(data, dist = uniNorm, initial)
-##' MCLE(data, dist = uniNorm, initial, returnOptim = TRUE)
-##' mean(data)
-##' sd(data)
-##' 
-##' ust = list(dev = devUST, grad = gradDevUST,
-##'            paramList2Vec = paramList2VecUST,
-##'            paramVec2List = paramVec2ListUST)
-##' initial = list(xi = 0, omega = 1, alpha = 0, nu = 100)
-##' MCLE(data, dist = ust, initial)
-##' 
 ##' data = matrix(rnorm(200), nrow = 100)
-##' mst = list(dev = devMST, grad = gradDevMST,
-##'            paramList2Vec = paramList2VecMST,
-##'            paramVec2List = paramVec2ListMST)
+##' mst = list(dev = MCLE:::devMST, grad = MCLE:::gradDevMST,
+##'            paramList2Vec = MCLE:::paramList2VecMST,
+##'            paramVec2List = MCLE:::paramVec2ListMST)
 ##' initial = list(xi = c(0, 0), Omega = diag(c(1, 1)),
 ##'                alpha = c(0, 0), nu = 100)
 ##' MCLE(data, dist = mst, initial)
 ##' 
-##' mt = list(dev = devMT, grad = gradDevMT,
-##'           paramList2Vec = paramList2VecMT,
-##'           paramVec2List = paramVec2ListMT)
+##' mt = list(dev = MCLE:::devMT, grad = MCLE:::gradDevMT,
+##'           paramList2Vec = MCLE:::paramList2VecMT,
+##'           paramVec2List = MCLE:::paramVec2ListMT)
 ##' initial = list(xi = c(0, 0), Omega = diag(c(1, 1)), nu = 100)
 ##' MCLE(data, dist = mt, initial)
 ##' 
-##' msn = list(dev = devMSN, grad = gradDevMSN,
-##'           paramList2Vec = paramList2VecMSN,
-##'           paramVec2List = paramVec2ListMSN)
+##' msn = list(dev = MCLE:::devMSN, grad = MCLE:::gradDevMSN,
+##'           paramList2Vec = MCLE:::paramList2VecMSN,
+##'           paramVec2List = MCLE:::paramVec2ListMSN)
 ##' initial = list(xi = c(0, 0), Omega = diag(c(1, 1)), alpha = c(0, 0))
 ##' MCLE(data, dist = msn, initial)
 ##' 
-##' mn = list(dev = devMN, grad = gradDevMN,
-##'           paramList2Vec = paramList2VecMN,
-##'           paramVec2List = paramVec2ListMN)
+##' mn = list(dev = MCLE:::devMN, grad = MCLE:::gradDevMN,
+##'           paramList2Vec = MCLE:::paramList2VecMN,
+##'           paramVec2List = MCLE:::paramVec2ListMN)
 ##' initial = list(xi = c(0, 0), Omega = diag(c(1, 1)), alpha = c(0, 0))
 ##' MCLE(data, dist = msn, initial)
 ##' 
 ##' data = rpois(30, lambda = 4.7)
 ##' data = c(data, 100)
-##' dist = list(dev = devPsn, grad = gradDevPsn,
-##'            paramList2Vec = paramList2VecPsn,
-##'            paramVec2List = paramVec2ListPsn)
+##' dist = list(dev = MCLE:::devPsn, grad = MCLE:::gradDevPsn,
+##'            paramList2Vec = MCLE:::paramList2VecPsn,
+##'            paramVec2List = MCLE:::paramVec2ListPsn)
 ##' initial = list(lambda = 1)
 ##' MCLE(data, dist = dist, initial)
 ##' mean(data)

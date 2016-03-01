@@ -15,9 +15,7 @@
 ##' 
 ##' @export
 ##' 
-##' @import cubature
-##' 
-##' @example
+##' @examples
 ##' # Univariate examples
 ##' pdf1 = dnorm
 ##' pdf2 = function(x){dnorm(x, mean = 0.3)}
@@ -42,5 +40,5 @@ kullbackLeibler = function(pdf1, pdf2, dimension = 1,
     f = function(x){
         pdf1(x) * log(pdf1(x) / pdf2(x))
     }
-    adaptIntegrate(f, lowerLimit = lower, upperLimit = upper)$integral
+    cubature::adaptIntegrate(f, lowerLimit = lower, upperLimit = upper)$integral
 }

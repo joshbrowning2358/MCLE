@@ -11,12 +11,13 @@ URL: https://github.com/rockclimber112358/MCLE
 License: GPL (>= 3)
 Imports:
 Depends:
-    sn (>= 1.1-2)
+    sn (>= 1.1-2),
+    ggplot2
 LazyData: yes
 ZipData: no
 VignetteBuilder: knitr
 Suggests:
     knitr,
-    ggplot2,
+    cubature,
     testthat
 RoxygenNote: 5.0.1

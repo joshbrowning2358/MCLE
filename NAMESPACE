@@ -2,4 +2,7 @@
 
 export(MCLE)
 export(defineFunctions)
+export(kullbackLeibler)
 export(naiveMLE)
+export(simulateKvsMAD)
+import(ggplot2)

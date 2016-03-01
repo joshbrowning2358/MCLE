@@ -27,7 +27,7 @@
 ##'   
 ##' @return
 ##' 
-##' @example
+##' @examples
 ##' dev = function(x, ...){-2 * dnorm(x, ..., log = TRUE)}
 ##' simulateKvsMAD(rnorm, dev, sd = 10^seq(-3, 3, .5), mean = -2:2)
 ##' simulateKvsMAD(rnorm, dev, sd = 10^seq(-3, 3, .5), mean = -2:2,
@@ -104,8 +104,13 @@ simulateKvsMAD = function(rand, dev, quantiles = c(0.95), nSample = 1000, nRuns 
     results = do.call("rbind", results)
     
     toPlot = reshape2::melt(results, id.vars = c("quantile", "deviance"))
-    out = ggplot(toPlot, aes(x = value, y = deviance, color = quantile)) +
-        geom_point() + facet_wrap( ~ variable)
+    if(length(quantiles) == 1){
+        out = ggplot(toPlot, aes(x = value, y = deviance)) +
+            geom_point() + facet_wrap( ~ variable)
+    } else {
+        out = ggplot(toPlot, aes(x = value, y = deviance, color = quantile)) +
+            geom_point() + facet_wrap( ~ variable)
+    }
     if(logMAD)
         out = out + scale_x_log10()
     out
