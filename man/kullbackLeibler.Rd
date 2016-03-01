@@ -16,9 +16,11 @@ required.  This function should be the true or known density.}
 
 \item{dimension}{Integer.  The dimension of the space.  Assumed to be 1.}
 
-\item{lower}{}
+\item{lower}{A vector of the lower bounds in each dimension.  Defaults to a
+vector of -10.}
 
-\item{upper}{}
+\item{upper}{A vector of the upper bounds in each dimension.  Defaults to a
+vector of 10.}
 }
 \value{
 The Kullback-Leibler divergence.

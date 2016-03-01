@@ -5,7 +5,7 @@
 \title{Simulate k vs MAD}
 \usage{
 simulateKvsMAD(rand, dev, quantiles = c(0.95), nSample = 1000,
-  nRuns = 100, ..., logMAD = TRUE)
+  nRuns = 100, logMAD = TRUE, ...)
 }
 \arguments{
 \item{rand}{The random number generator function, accepting the number of 
@@ -17,19 +17,19 @@ well as any parameters passed in ...}
 \item{quantiles}{The quantiles of the deviance which are desired for 
 reporting.}
 
+\item{nSample}{The number of random samples to draw within each run.}
+
 \item{nRuns}{The number of total runs to perform.}
+
+\item{logMAD}{Logical.  Should the MAD be plotted on a log scale?}
 
 \item{...}{Additional vectors of parameters.  Each passed argument must be 
 named and must be of type vector.  For each run, a sample will be drawn 
 from each vector and this value will be passed to both rand and dev.  See
 examples.}
-
-\item{nSize}{The number of random samples to draw within each run.}
-
-\item{Logical.}{Should the MAD be plotted on a log scale?}
 }
 \value{
-
+A ggplot2 object plotting the results of the simulation.
 }
 \description{
 This function simulates random variables from a (univariate) random number 

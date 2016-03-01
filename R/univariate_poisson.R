@@ -18,26 +18,23 @@
 NULL
 
 ##' @rdname univariatePoisson
-devPsn = function(x, params, w = rep(1, length(x))){
-    # Data Quality Checks:
-    stopifnot(length(w) == length(x))
-    
+devPsn = function(x, params){
     dp = paramVec2ListPsn(params)
-    -2*dpois(x, lambda = dp$lambda, log = TRUE) * w
+    -2*dpois(x, lambda = dp$lambda, log = TRUE)
 }
 
-gradDevPsn = function(x, params, w = rep(1, length(x))){
-    # Data Quality Checks:
-    stopifnot(length(w) == length(x))
-    
+##' @rdname univariatePoisson
+gradDevPsn = function(x, params){
     dp = paramVec2ListPsn(params)
-    -2*(x/dp$lambda - 1) * w
+    -2*(x/dp$lambda - 1)
 }
 
+##' @rdname univariatePoisson
 paramVec2ListPsn = function(paramVec){
     list(lambda = paramVec[[1]])
 }
 
+##' @rdname univariatePoisson
 paramList2VecPsn = function(paramList){
     paramList = unlist(paramList)
 }

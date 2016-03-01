@@ -8,10 +8,9 @@
 \alias{paramVec2ListMST}
 \title{Multivariate Skew-t}
 \usage{
-devMST(x, params, w = rep(1, nrow(x)), fixed.nu = NULL, symmetr = FALSE)
+devMST(x, params, fixed.nu = NULL, symmetr = FALSE)
 
-gradDevMST(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
-  fixed.nu = NULL)
+gradDevMST(x, params, symmetr = FALSE, fixed.nu = NULL)
 
 paramVec2ListMST(paramVec)
 
@@ -22,6 +21,12 @@ paramList2VecMST(paramList)
 
 \item{params}{A vector, typically as created by paramList2Vec called on a 
 list object with four elements: xi, Omega, alpha, nu.}
+
+\item{fixed.nu}{If not NULL, nu is assumed to be fixed to a particular
+value.}
+
+\item{symmetr}{Logical.  If TRUE, the distribution is assumed to be 
+symmetric (i.e. alpha is a zero vector).}
 
 \item{paramVec}{A vector of the parameters of the multivariate distribution.}
 

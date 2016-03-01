@@ -20,13 +20,13 @@ NULL
 
 ##' @rdname multivariateNormal
 
-devMN = function(x, params, w = rep(1, nrow(x))){
-    devMST(x = x, params = params, w = w, symmetr = TRUE, fixed.nu = 1e8)
+devMN = function(x, params){
+    devMST(x = x, params = params, symmetr = TRUE, fixed.nu = 1e8)
 }
 
 ##' @rdname multivariateNormal
 gradDevMN = function(x, params){
-    gradDevMST(x = x, params = params, w = w, symmetr = TRUE, fixed.nu = 1e8)
+    gradDevMST(x = x, params = params, symmetr = TRUE, fixed.nu = 1e8)
 }
 
 ##' @rdname multivariateNormal

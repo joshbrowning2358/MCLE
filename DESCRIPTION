@@ -10,6 +10,7 @@ Description: This package provides functions for robust fitting of several
 URL: https://github.com/rockclimber112358/MCLE
 License: GPL (>= 3)
 Imports:
+    reshape2
 Depends:
     sn (>= 1.1-2),
     ggplot2

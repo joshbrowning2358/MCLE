@@ -8,9 +8,9 @@
 \alias{paramVec2ListMT}
 \title{Multivariate t}
 \usage{
-devMT(x, params, w = rep(1, NROW(x)))
+devMT(x, params)
 
-gradDevMT(x, params, w = rep(1, NROW(x)))
+gradDevMT(x, params)
 
 paramVec2ListMT(paramVec)
 

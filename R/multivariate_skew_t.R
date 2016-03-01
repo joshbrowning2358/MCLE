@@ -15,13 +15,18 @@
 ##'   center), Omega (a matrix describing the dispersion), alpha (a vector 
 ##'   describing the skewness), and nu (a numeric providing the heaviness of the
 ##'   tails).
-##'   
+##' @param fixed.nu If not NULL, nu is assumed to be fixed to a particular
+##'   value.
+##' @param symmetr Logical.  If TRUE, the distribution is assumed to be 
+##'   symmetric (i.e. alpha is a zero vector).
+##' 
+##' @import sn
+##' 
 ##' @name multivariateSkewT
 NULL
 
 ##' @rdname multivariateSkewT
-devMST = function(x, params, w = rep(1, nrow(x)), fixed.nu = NULL,
-                  symmetr = FALSE){
+devMST = function(x, params, fixed.nu = NULL, symmetr = FALSE){
     l = length(params)
     # Taken from sn:::mst.pdev:
     d <- ncol(x)
@@ -36,14 +41,14 @@ devMST = function(x, params, w = rep(1, nrow(x)), fixed.nu = NULL,
     } else {
         nu = fixed.nu
     }
-    logL <- w * sn:::dmst(x, matrix(1, nrow = nrow(x)) %*% dp$beta,
-                          dp$Omega, dp$alpha, nu, log = TRUE)
+    logL <- sn::dmst(x, matrix(1, nrow = nrow(x)) %*% dp$beta,
+                      dp$Omega, dp$alpha, nu, log = TRUE)
     dev <- (-2) * logL
     return(dev)
 }
 
 ##' @rdname multivariateSkewT
-gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
+gradDevMST = function(x, params, symmetr = FALSE,
                       fixed.nu = NULL){
     l = length(params)
     
@@ -68,9 +73,8 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
     }
     Oinv <- t(A) %*% diag(D, d, d) %*% A
     u <- x - matrix(1, nrow = nrow(x)) %*% beta
-    u.w <- u * w
-    Q <- as.vector(rowSums((u %*% Oinv) * u.w))
-    L <- as.vector(u.w %*% eta)
+    Q <- as.vector(rowSums((u %*% Oinv) * u))
+    L <- as.vector(u %*% eta)
     if(nu < 10000){
         sf <- sqrt((nu + d)/(nu + Q))
     } else {
@@ -82,10 +86,10 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
     dt.dQ <- (-0.5) * L * sf/(Q + nu)
     logT. <- pt(t., nu + d, log.p = TRUE)
     dlogT. <- exp(dt(t., nu + d, log = TRUE) - logT.)
-#     Dbeta <- (-2 * t(x) %*% (u.w * dlogft) %*% Oinv - outer(as.vector(t(x) %*% 
+#     Dbeta <- (-2 * t(x) %*% (u * dlogft) %*% Oinv - outer(as.vector(t(x) %*% 
 #         (dlogT. * dt.dL * w)), eta) - 2 * t(x) %*% (dlogT. * 
-#         dt.dQ * u.w) %*% Oinv)
-    toMult = -2 * u.w * (dlogft + dlogT. * dt.dQ)
+#         dt.dQ * u) %*% Oinv)
+    toMult = -2 * u * (dlogft + dlogT. * dt.dQ)
     # Vectorize the matrix multiplication
     M1 = sapply(split(toMult, row(toMult)), function(vec){vec %*% Oinv})
     if(d != 1){
@@ -94,11 +98,11 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
         # If d == 1, the 1 column matrix becomes a vector, so we must coerce back.
         M1 = matrix(M1, ncol = 1)
     }
-    M2 = matrix(dlogT. * dt.dL * w, ncol = 1) %*% eta
+    M2 = matrix(dlogT. * dt.dL, ncol = 1) %*% eta
     Dbeta = M1 - M2
-    Deta <- dlogT. * sf * u.w
+    Deta <- dlogT. * sf * u
     if(d > 1){
-        M <- lapply(vecOuterMult(u * dlogft + u * dlogT. * dt.dQ, u.w),
+        M <- lapply(vecOuterMult(u * dlogft + u * dlogT. * dt.dQ, u),
                     function(mat){
                         2 * (diag(D, d, d) %*% A %*% mat)
                     })
@@ -107,17 +111,17 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
     } else {
         DA <- NULL
     }
-    M <- lapply(vecOuterMult(u * dlogft + u * dlogT. * dt.dQ, u.w),
+    M <- lapply(vecOuterMult(u * dlogft + u * dlogT. * dt.dQ, u),
                 function(mat) A %*% mat %*% t(A))
     if(d > 1){
-        DD <- mapply(function(mat, weight){
-            diag(mat) + 0.5 * weight/D
-        }, mat = M, weight = w)
+        DD <- mapply(function(mat){
+            diag(mat) + 0.5 / D
+        }, mat = M)
         DD = t(DD)
     } else {
-        DD <- mapply(function(mat, weight){
-            mat + 0.5 * weight / D
-        }, mat = M, weight = w)
+        DD <- mapply(function(mat){
+            mat + 0.5 / D
+        }, mat = M)
         DD = matrix(DD, ncol = 1)
     }
     DD = DD * -2 * matrix(D, nrow = nrow(x), ncol = ncol(DD), byrow = TRUE)
@@ -142,7 +146,7 @@ gradDevMST = function(x, params, w = rep(1, nrow(x)), symmetr = FALSE,
         }
         logT.eps <- pt(L * sf1, df1 + d, log.p = TRUE)
         dlogT.ddf <- (logT.eps - logT.)/eps
-        Ddf <- (dlogft.ddf + dlogT.ddf) * w
+        Ddf <- (dlogft.ddf + dlogT.ddf)
         grad <- cbind(grad, -2 * Ddf * df0)
     }
     return(grad)

@@ -12,9 +12,13 @@ constraintDerivET(x, k = 10)
 }
 \arguments{
 \item{x}{A numeric vector of the log-likelihoods of the observations.}
+
+\item{k}{The value of the deviance at which point deviance values become
+adjusted.  For this particular function, (adjusted) deviance values will
+never exceed 2*k}
 }
 \description{
-These functions define an exponential threshold to be applied to the
+These functions define an exponential threshold to be applied to the 
 log-likelihood values.
 }
 

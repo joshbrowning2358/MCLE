@@ -4,7 +4,7 @@
 \alias{naiveMLE}
 \title{Naive MLE}
 \usage{
-naiveMLE(data, dist, initial, w = rep(1, NROW(data)), returnOptim = FALSE)
+naiveMLE(data, dist, initial, returnOptim = FALSE)
 }
 \arguments{
 \item{data}{A matrix of data.  If univariate, data should have 1 column.  If

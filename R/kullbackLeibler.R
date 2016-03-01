@@ -8,8 +8,10 @@
 ##'   required.  This function should be the true or known density.
 ##' @param pdf2 Same as pdf1, but for the estimated density.
 ##' @param dimension Integer.  The dimension of the space.  Assumed to be 1.
-##' @param lower 
-##' @param upper
+##' @param lower A vector of the lower bounds in each dimension.  Defaults to a
+##'   vector of -10.
+##' @param upper A vector of the upper bounds in each dimension.  Defaults to a
+##'   vector of 10.
 ##' 
 ##' @return The Kullback-Leibler divergence.
 ##' 

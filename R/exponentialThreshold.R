@@ -1,10 +1,13 @@
 ##' Exponential Threshold
 ##' 
-##' These functions define an exponential threshold to be applied to the
+##' These functions define an exponential threshold to be applied to the 
 ##' log-likelihood values.
 ##' 
 ##' @param x A numeric vector of the log-likelihoods of the observations.
-##' 
+##' @param k The value of the deviance at which point deviance values become
+##'   adjusted.  For this particular function, (adjusted) deviance values will
+##'   never exceed 2*k
+##'   
 ##' @name exponentialThreshold
 NULL
 

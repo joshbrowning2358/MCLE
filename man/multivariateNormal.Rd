@@ -8,7 +8,7 @@
 \alias{paramVec2ListMN}
 \title{Multivariate Normal}
 \usage{
-devMN(x, params, w = rep(1, nrow(x)))
+devMN(x, params)
 
 gradDevMN(x, params)
 

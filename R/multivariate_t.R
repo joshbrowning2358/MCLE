@@ -19,13 +19,13 @@
 NULL
 
 ##' @rdname multivariateT
-devMT = function(x, params, w = rep(1, NROW(x))){
-    devMST(x = x, params = params, w = w, symmetr = TRUE)
+devMT = function(x, params){
+    devMST(x = x, params = params, symmetr = TRUE)
 }
 
 ##' @rdname multivariateT
-gradDevMT = function(x, params, w = rep(1, NROW(x))){
-    gradDevMST(x = x, params = params, w = w, symmetr = TRUE)
+gradDevMT = function(x, params){
+    gradDevMST(x = x, params = params, symmetr = TRUE)
 }
 
 ##' @rdname multivariateT

@@ -24,13 +24,13 @@
 NULL
 
 ##' @rdname multivariateSkewNormal
-devMSN = function(x, params, w = rep(1, NROW(x))){
-    devMST(x = x, params = params, w = w, fixed.nu = 1e8)
+devMSN = function(x, params){
+    devMST(x = x, params = params, fixed.nu = 1e8)
 }
 
 ##' @rdname multivariateSkewNormal
 gradDevMSN = function(x, params){
-    gradDevMST(x = x, params = params, w = w, fixed.nu = 1e8)
+    gradDevMST(x = x, params = params, fixed.nu = 1e8)
 }
 
 ##' @rdname multivariateSkewNormal

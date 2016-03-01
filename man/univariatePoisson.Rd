@@ -2,10 +2,19 @@
 % Please edit documentation in R/univariate_poisson.R
 \name{univariatePoisson}
 \alias{devPsn}
+\alias{gradDevPsn}
+\alias{paramList2VecPsn}
+\alias{paramVec2ListPsn}
 \alias{univariatePoisson}
 \title{Univariate Poisson}
 \usage{
-devPsn(x, params, w = rep(1, length(x)))
+devPsn(x, params)
+
+gradDevPsn(x, params)
+
+paramVec2ListPsn(paramVec)
+
+paramList2VecPsn(paramList)
 }
 \arguments{
 \item{x}{A numeric vector of observations.  As the Poisson distribution is

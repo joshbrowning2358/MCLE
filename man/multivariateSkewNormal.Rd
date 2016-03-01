@@ -8,7 +8,7 @@
 \alias{paramVec2ListMSN}
 \title{Multivariate Skew Normal}
 \usage{
-devMSN(x, params, w = rep(1, NROW(x)))
+devMSN(x, params)
 
 gradDevMSN(x, params)
 

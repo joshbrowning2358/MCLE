@@ -4,7 +4,7 @@
 \alias{MCLE}
 \title{Maximum Constrained Likelihood Estimator}
 \usage{
-MCLE(data, dist, initial, w = rep(1, NROW(data)), returnOptim = FALSE,
+MCLE(data, dist, initial, returnOptim = FALSE,
   constraintFunc = constraintET, constraintFuncDeriv = constraintDerivET)
 }
 \arguments{

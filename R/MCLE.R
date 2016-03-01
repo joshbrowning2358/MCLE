@@ -69,7 +69,7 @@
 ##' @export
 ##' 
 
-MCLE = function(data, dist, initial, w = rep(1, NROW(data)), returnOptim = FALSE,
+MCLE = function(data, dist, initial, returnOptim = FALSE,
                 constraintFunc = constraintET,
                 constraintFuncDeriv = constraintDerivET){
     ## Data Quality Checks
@@ -88,12 +88,12 @@ MCLE = function(data, dist, initial, w = rep(1, NROW(data)), returnOptim = FALSE
     
     initialVec = dist$paramList2Vec(initial)
     fn = function(par){
-        sum(constraintFunc(dist$dev(data, params = par, w = w)))
+        sum(constraintFunc(dist$dev(data, params = par)))
     }
     gr = function(par){
         # Chain rule: d/dtheta(f(L(x))) = f'(L(x)) * d/dtheta(L(x))
-        constraintFuncDeriv(dist$dev(data, params = par, w = w)) %*%
-            dist$grad(x = data, params = par, w = w)
+        constraintFuncDeriv(dist$dev(data, params = par)) %*%
+            dist$grad(x = data, params = par)
     }
     optimResult = optim(initialVec, fn = fn, gr = gr)
     soln = dist$paramVec2List(optimResult$par)
