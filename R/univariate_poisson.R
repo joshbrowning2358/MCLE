@@ -18,17 +18,24 @@
 NULL
 
 ##' @rdname univariatePoisson
-devPsn = function(x, params){
-    -2*sum(dpois(x, lambda = params[1], log = TRUE))
+devPsn = function(x, params, w = rep(1, length(x))){
+    # Data Quality Checks:
+    stopifnot(length(w) == length(x))
+    
+    dp = paramVec2ListPsn(params)
+    -2*dpois(x, lambda = dp$lambda, log = TRUE) * w
 }
 
-gradDevPsn = function(x, params){
-    -2*sum(x/lambda - 1)
+gradDevPsn = function(x, params, w = rep(1, length(x))){
+    # Data Quality Checks:
+    stopifnot(length(w) == length(x))
+    
+    dp = paramVec2ListPsn(params)
+    -2*(x/dp$lambda - 1) * w
 }
 
 paramVec2ListPsn = function(paramVec){
-    out = list(lambda = paramVec[[1]])
-    return(out)
+    list(lambda = paramVec[[1]])
 }
 
 paramList2VecPsn = function(paramList){
