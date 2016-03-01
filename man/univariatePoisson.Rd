@@ -5,7 +5,7 @@
 \alias{univariatePoisson}
 \title{Univariate Poisson}
 \usage{
-devPsn(x, params)
+devPsn(x, params, w = rep(1, length(x)))
 }
 \arguments{
 \item{x}{A numeric vector of observations.  As the Poisson distribution is
